@@ -1,7 +1,9 @@
 from networkx import DiGraph,Graph,set_node_attributes,transitive_closure,compose
-from digraphs import reflexive_closure,intersection,clean_digraph
+from digraphs import reflexive_closure,intersection,clean_digraph,tau_distance
 from functools import reduce
 from itertools import combinations
+from networkx import draw_networkx_nodes,draw_networkx_edges,draw_networkx_labels,circular_layout
+import matplotlib.pyplot as plt
 import copy
 
 class Preference(DiGraph):
@@ -9,20 +11,28 @@ class Preference(DiGraph):
         if not isinstance(digraph, DiGraph):
             raise ValueError("Input should be an instance of the 'DiGraph' class.")
         super().__init__(digraph, **kwargs)
-        self.digraph = transitive_closure(reflexive_closure(digraph)).copy()
-        self.alternatives = digraph.nodes()
+        self.digraph = digraph
+        self.pos = circular_layout(digraph)
         
     def join(self,other):
         #least upper bound of two preference relation under information order
         if not isinstance(other, Preference):
             raise ValueError("Input should be an instance of the 'Preference' class.")
-        return Preference(transitive_closure(reflexive_closure(compose(self.digraph, other.digraph))).copy())
+        return Preference(clean_digraph(transitive_closure(compose(self.digraph, other.digraph))).copy())
     
     def meet(self,other):
         #greatest lower bound of two preference relation under information order
         if not isinstance(other, Preference):
             raise ValueError("Input should be an instance of the 'Pref' class.")
         return Preference(intersection(self.digraph,other.digraph).copy())
+    
+    def clean(self):
+        return Preference(clean_digraph(self.digraph).copy())
+    
+    def plot(self,edge_color='blue',**kwargs):
+        draw_networkx_nodes(self.digraph,self.pos,node_color='black',node_size=5)
+        draw_networkx_edges(self.digraph,self.pos,edge_color=edge_color,width=1, alpha=0.5)
+        
 
 class Agent(Preference):
     def __init__(self,preference,r_median,update_rule,**kwargs):
@@ -45,7 +55,7 @@ class Agent(Preference):
                 raise ValueError("Input should be an instance of the 'Agent' class.")
             pref_list.append(agent.preference)
         groups = [list(comb) for comb in combinations(pref_list,r)]
-        return reduce(self.preference.join,[reduce(self.preference.meet,group) for group in groups])
+        return reduce(Preference.join,[reduce(Preference.meet,group) for group in groups])
     
     def update(self,agent_list):
         if self.update_rule == 'prior':
@@ -56,6 +66,18 @@ class Agent(Preference):
             return Preference(self.digraph).join(self.aggregate(agent_list))
         if self.update_rule == 'meet':
             return Preference(self.digraph).meet(self.aggregate(agent_list))
+        
+    def kemmeny_score(self,agent_list):
+        score = 0
+        for agent in agent_list:
+            if not isinstance(agent,Agent):
+                raise ValueError("Input should be an instance of the 'Agent' class.")
+            score+=tau_distance(agent.digraph, self.update(self,agent_list).digraph)
+        return score
+            
+    def tau(self):
+        dist = tau_distance(self.digraph, self.update(self,agent_list).digraph)
+        return dist
 
 class SocialNetwork:
     def __init__(self,graph,agent_dict):

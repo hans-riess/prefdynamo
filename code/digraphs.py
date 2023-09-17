@@ -1,6 +1,8 @@
 from networkx import DiGraph,Graph
-from networkx import transitive_closure,transitive_reduction,compose,neighbors,is_directed_acyclic_graph
-from random import shuffle,sample,seed
+from networkx import transitive_closure,transitive_reduction,compose,neighbors,is_directed_acyclic_graph,has_path,dfs_preorder_nodes,random_tree
+from random import shuffle,sample,seed,choice
+from numpy.random import rand
+from itertools import permutations
 
 def reflexive_closure(digraph):
     if not isinstance(digraph, DiGraph):
@@ -22,31 +24,56 @@ def intersection(digraph_1,digraph_2):
             digraph.add_edge(*edge)
     return digraph
 
-def generate_random_dag(n_alternatives, n_comparisons,seed_value=None):
-    if seed_value is not None:
-        seed(seed_value)
-    dag = DiGraph()
-    dag.add_nodes_from(range(n_alternatives))
-    alternatives = list(dag.nodes())
-    shuffle(alternatives)
+def generate_random_preorder(n_nodes, edge_prob):
+    # Step 1: Generate a random DAG
+    digraph = DiGraph()
+    digraph.add_nodes_from(range(n_nodes))
+    
+    for i, j in permutations(range(n_nodes), 2):
+        if has_path(digraph, j, i):  # Ensure acyclicity
+            continue
+        if edge_prob > rand():
+            digraph.add_edge(i, j)
+    
+    # Step 2: Ensure transitivity
+    for i, j in permutations(range(n_nodes), 2):
+        if has_path(digraph, i, j) and not digraph.has_edge(i, j):
+            digraph.add_edge(i, j)
+            
+    return digraph
 
-    while dag.number_of_edges() < n_comparisons:
-        # Pick two random alternatives
-        source, target = sample(alternatives, 2)
-        
-        # Ensure the source node comes before the target node in the ordering
-        if alternatives.index(source) < alternatives.index(target):
-            if not dag.has_edge(source, target):
-                dag.add_edge(source, target)
-    return dag
+def generate_random_arborescence(num_nodes):
+    G = DiGraph()
+    nodes = list(range(num_nodes))
+    shuffle(nodes)
+
+    root = nodes.pop()
+    G.add_node(root)
+    
+    for node in nodes:
+        possible_parents = list(G.nodes())
+        parent = choice(possible_parents)
+        G.add_edge(parent, node)
+
+    return G
 
 def clean_digraph(digraph):
-    #for visualizing preferences
+    #removes self-loops
     edges_to_remove = []
     for edge in digraph.edges():
         if edge[0] == edge[1]:
             edges_to_remove.append(edge)
     digraph.remove_edges_from(edges_to_remove)
-    if is_directed_acyclic_graph(digraph) == False:
-        raise ValueError("'DiGraph' instance must be a DAG.")
-    return transitive_reduction(digraph)
+    return digraph
+    
+def tau_distance(digraph_1,digraph_2):
+    if len(digraph_1) != len(digraph_2):
+        raise ValueError("'digraph_1' and 'digraph_2' should have same number of nodes.")
+    n_nodes = len(digraph_1)
+    digraph_2.reverse()
+    dist = 0
+    for i in range(n_nodes):
+        for j in range(n_nodes):
+            if (i,j) in digraph_1.edges and (j,i) in digraph_2.edges:
+                dist+=1
+    return dist
