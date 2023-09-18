@@ -5,11 +5,12 @@
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 % \usepackage{caption}
-\usepackage{algorithmic}
+\usepackage[ruled,linesnumbered]{algorithm2e}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{microtype}
+\usepackage{stmaryrd}
 
 
 
@@ -20,13 +21,16 @@
 \newcommand{\A}{\mathcal{A}}
 \newcommand{\X}{\mathcal{X}}
 \newcommand{\I}{\mathcal{I}}
-\renewcommand{\P}{\mathrm{Pref}}
+\renewcommand{\P}{\mathcal{P}}
+\newcommand{\Pref}{\mathrm{Pref}}
 \renewcommand{\L}{\mathcal{L}}
 \newcommand{\prefers}{\succsim}
 \newcommand{\metaprefers}{\sqsupseteq}
 \newcommand{\indif}{\sim}
 \newcommand{\join}{\vee}
 \newcommand{\meet}{\wedge}
+\newcommand{\bigjoin}{\bigvee}
+\newcommand{\bigmeet}{\bigwedge}
 \renewcommand{\leq}{\leqslant}
 \renewcommand{\geq}{\geqslant}
 \newcommand{\graph}{\mathcal{G}}
@@ -34,6 +38,16 @@
 \DeclareMathOperator{\Atoms}{At}
 \DeclareMathOperator{\cl}{cl}
 \DeclareMathOperator{\Cl}{Cl}
+\DeclareMathOperator{\Fix}{Fix}
+\DeclareMathOperator{\Aggregate}{Aggregate}
+\DeclareMathOperator{\Median}{Median}
+
+%Multi-Set Notation
+\usepackage{scalerel}
+\usepackage{stackengine}
+\newcommand\doublelcurly{\stackengine{0pt}{\lbrace}{\kern-0.3ex\lbrace}{O}{l}{F}{F}{L}}
+\newcommand\doublercurly{\stackengine{0pt}{\rbrace}{\kern-0.3ex\rbrace}{O}{l}{F}{F}{L}}
+\newcommand\multiset[1]{\doublelcurly #1 \doublercurly}
 
 %THEOREMS
 \newtheorem{theorem}{Theorem}
@@ -49,11 +63,14 @@
 
 \begin{document}
 
-\title{\bf Towards Decentralized Optimal Control of Preferences with Lattice Theory}
+\title{\bf Towards Decentralized Optimal Control of Preferences}
 
-\author{Hans Riess and Michael M.~Zavlanos% <-this % stops a space
-\thanks{Hans Riess and Michael M.~Zavlanos are with Duke University.
-        {\tt\small \{hans.riess, michael.zavlanos\}@duke.edu}}%
+\author{Hans Riess, Gregory Henselman-Petrusek, Michael C. Munger, Robert Ghrist, and Michael M.~Zavlanos% <-this % stops a space
+\thanks{Hans Riess is with the Department of Electrical \& Computer Engineering, Duke University. Email: {\tt hans.riess@duke.edu} (corresponding author).}%
+\thanks{Gregory Henselman-Petrusek is with the Pacific Northwest National Labratory.}%
+\thanks{Michael Munger is with the Department of Economics and the Deparment of Political Science, Duke University.}%
+\thanks{Robert Ghrist is with the Department of Electrical \& Systems Engineering, Duke University.}%
+\thanks{Michael Zavlanos is with the Department of Mechanical Engineering \& Material Science, Duke University.}%
 }
 \maketitle
 
@@ -68,7 +85,7 @@ Preferences, fundamental in all forms of strategic behavior and collective decis
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-In their traditional use in economics and social science, preferences are commonly associated with human taste, want, or desire. Mathematically, however, a preference relation is a relative, and possibly incomplete, ordering among alternatives, i.e.~possible choices. Preferences are fundamental to collective decision (the social choice problem) or ranking problems, involving the input of many agents, as well as models of strategic behavior, e.g.~non-cooperative games, where agents take actions based on their preferences as well as, effectively, the preferences of other agents. In the former, it is critical to design preference-aggregation mechanisms that satisfy certain criteria of fairness. When agents have limited communication or interaction with other agents, it is not feasible to aggregate preferences in a centralized or even synchronous manner. Worse, even if preferences are centrally gathered without strategic manipulation \cite{gibbard1973,satterthwaite1975}, faithfully representing preferences of a group of agents by a single aggregate preference is well-known to be a paradox \cite{arrow2012}. In the latter (game theory), preferences are commonly assumed from the start, and agents take actions based them. Our analysis does not belong here, but instead to the formation of the preferences themselves, which typically occurs before a game is played, or, in iterative games, before a round. Furthermore, agents' entire preferences are not, in reality, common knowledge, or even known at all, which complicates the task of an agent selecting the best response to other agents' actions.
+In their traditional use in economics and social science, preferences are commonly associated with human taste, want, or desire. Mathematically, however, a preference relation is a relative ordering of \emph{alternatives}, possible choices or options. Preferences are fundamental to collective decision or ranking problems involving the input of many agents, as well as all models of strategic behavior, e.g.~non-cooperative games, where agents take actions based on their preferences as well as, in effect, the preferences of other agents. In the former, it is critical to design preference-aggregation mechanisms that satisfy certain criteria of fairness. When agents have limited communication or interaction with other agents, it is not feasible to aggregate preferences in a centralized or even synchronous manner. Worse, even if preferences are centrally gathered without strategic manipulation \cite{gibbard1973,satterthwaite1975}, faithfully representing preferences of a group of agents by a single aggregate preference is well-known to be a paradox \cite{arrow2012}. In the latter (game theory), preferences are commonly assumed from the start, and agents take actions based them. Our analysis does not belong here, but instead to the formation of the preferences themselves, which typically occurs before a game is played, or, in iterative games, before a round. Furthermore, agents' entire preferences are not, in reality, common knowledge, or even known at all, which complicates the task of an agent selecting the best response to other agents' actions.
 % Data-driven methods for learning preferences, e.g.~techniques using Hodge theory \cite{jiang2011}, require an extensive history of pairwise decision-making, scale poorly, and are limited by their requirement to produce a (complete) cardinal ranking of alternatives.
 
 Utility functions represent some classes of preference relations, however, others are unrepresentable \cite{Beardon2002}. If preferences are represented by utility functions, techniques in distributed optimization apply to the social choice problem, i.e.~finding an alternative that maximizes the social welfare, i.e.~sum of utilities of agents. Nevertheless, utility functions, which represent complete and transitive preferences, are not capable of capturing the distinction between indifference between two alternatives, i.e.~one is not better than the other, and indecisiveness, i.e.~the agent has not made up its mind between the two alternatives or faced a choice between the two alternatives \cite{eliaz2006}. Furthermore, decision making in the real-world is often accompanied by conflicting or unresolved preferences \cite{levi1990}. The present paper offers a novel methodology for aggregating incomplete preferences in a robust and decentralized manner.
@@ -79,10 +96,18 @@ Aggregating preferences becomes even more challenging if preferences are no long
 While preferences have been studied classically in the human domain, we now argue that preference dynamics extends in scope to non-human agents.
 Intelligent multi-robot systems, e.g.~making autonomous decisions about what tasks to perform as well as what paths to take to reach a target location, are, arguably, making their decisions based on preference. If robots make these decisions collaboratively, or even react to the decisions of other agents, they are also, in effect, aggregating preferences. In reinforcement learning (RL), especially unexplainable models, agents form implicit preferences based on performing actions that maximize rewards, although sometimes rewards and broader goals can become misaligned \cite{pan2022}, a phenomenon known as ``reward hacking.'' Several efforts \cite{?} have been made to design systems whose outcomes imitate human preference, but, in the absence of a human controller, it is a challenging problem to control preferences of autonomous agents. Our strategy to is design decentralized preference-aggregation mechanisms converging to stable preferences that are acceptable to human supervisors. The key concept is \emph{metapreference},  or higher-order preference, a notion of a preference over preferences. Formally an arbitrary ordering on a set of preferences \cite{lutskanov2015}, a narrower class of metapreferences can be represented by utility functions on a set of preference relations, which can be interpreted as measuring, ``How much a preference costs?''\footnote{In an anecdote due to Michael Munger \cite{munger2019}, imagine there was a store selling preferences. A rational agent would have to be able to afford her preferences, e.g.~potato chips are preferred to  caviar. This parallels our observation that metapreferences can constrain the agents' preferences to those acceptable to a human supervisor.} 
 
-In systems with high levels of autonomy, in order for agents to safely form and update preferences based on their observations and interactions with other agents, metapreference is an apt framework for constraining the preferences of agents, without the limitation of designing agent behavior by imitating the preferences of a human supervisor, or directly hard-coding preferences into agents. Our approach is unique in that we design a distributed optimization algorithm whose decision variables are preference relations. The distributed optimization algorithm combines aspects of existing methods in combinatorial optimization \cite{?}, although extended to a different domain, and non-linear consensus algorithms, such as max-consensus \cite{?}. 
+In systems with high levels of autonomy, in order for agents to safely form and update preferences based on their observations and interactions with other agents, metapreference is an apt framework for constraining the preferences of agents, without the limitation of designing agent behavior by imitating the preferences of a human supervisor, or directly hard-coding preferences into agents. Our approach is unique in that we design consensus-like protocols and optimization algorithms whose decision variables are preference relations.
 
-\paragraph*{Related work}
-Preferences are distinct from opinions, i.e.~how much an agent likes or dislikes something, and beliefs, i.e.~the degree to which an agent thinks something is true, both of which have have benefited from the perspective control theory. To this end, the research area of opinion dynamics, initiated by DeGroot \cite{degroot1974}, remains a hive of activity, however, preference change in a multi-agent systems has, to our knowledge, never been studied from the perspectives of optimization or control. \textcolor{red}{More work to do here!}
+\subsection{Related work}
+
+Recent efforts have approached consensus \cite{riess2022}, synchronization \cite{maxplussync}, and signal processing \cite{puschel} from the perspective of ordered sets, e.g.~lattices. However, in this work we take it a step further by incorporating optimization into these problems. Motivated by 
+
+Several authors have studied aggregation or consensus functions on lattices \cite{frenchdudes}, and there is a corpus of literature addressing the design of preference-aggregation mechanisms \cite{arrow2012}, but, to our knowledge, none have approached the problem of aggregating preference relations either in a decentralized manner or from the perspective of lattice theory. The several efforts to formalize classical consensus algorithms with lattice theory \cite{consensus} have taken a backseat to a modern formulation of consensus \cite{consensus} and synchronization \cite{conensus} which often assumes a near-arbitrary dynamic network topology.
+
+
+
+Our treatment of preference dynamics is closely related to opinion dynamics \cite{opinion}. Opinions are typically framed as numeric representations of likes or dislikes versus preferences which are relational objects. While opinion dynamics has seen a resurgence of activity, especially approached from the perspective of control, preference change has not, until now, benefited from the perspectives of optimization and control.
+\textcolor{red}{More work to do here!}
 
 
 % 
@@ -90,131 +115,80 @@ Preferences are distinct from opinions, i.e.~how much an agent likes or dislikes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Problem Formulation}
 
-Agents $\N = \{1,2,\dots, N\}$ with positions $x_1, x_2, \dots, x_N$ are located in a compact domain $D \subseteq \R^d$ where they can interact with other agents by moving in close proximity to them. We assume the agents' positions are governed by dynamical systems
-\begin{align}
-    \dot{x}_i = f_i(x_i,u_i), \quad i \in \N \label{eq:x-dynamics}
-\end{align}
-with initial positions $x_i(0) \in \R^d$ and control input $u_i(t) \in \R^m$. We assume agents $i, j \in \N$ interact if $\| x_i - x_j \|_2 < \rho$ for some $\rho>0$. The interaction graph of agents is given by $\graph(t) = \left( \N, \edges(t) \right)$ where $(i,j) \in \mathcal{E}(t)$ if and only it $\| x_i(t) - x_j(t) \| \leq \rho$. We denote $\N_i^t = \{ j \in \N: \| x_i(t) - x_j(t) \| \leqslant \rho \}$ to be the neighbors of agent $i \in \N$ at time instant $t$. \textcolor{red}{\bf [[TODO]]: Remove the dynamics and just assume agents communicate according to a time-varying graph.}
+Agents $\N = \{1,2,\dots, N\}$ with positions $x_1, x_2, \dots, x_N$ are located in a compact domain $D \subseteq \R^d$ where they can interact with other agents by moving in close proximity to them.
+% We assume the agents' positions are governed by dynamical systems
+% \begin{align}
+%     \dot{x}_i = f_i(x_i,u_i), \quad i \in \N \label{eq:x-dynamics}
+% \end{align}
+% with initial positions $x_i(0) \in \R^d$ and control input $u_i(t) \in \R^m$.
+We assume agents $i, j \in \N$ interact if $\| x_i - x_j \| < \rho$ for some $\rho>0$. The interaction graph of agents is given by $\graph(t) = \left( \N, \edges(t) \right)$ where $(i,j) \in \mathcal{E}(t)$ if and only it $\| x_i(t) - x_j(t) \| \leq \rho$. We denote $\N_i^t = \{ j \in \N: \| x_i(t) - x_j(t) \| \leqslant \rho \}$ to be the neighbors of agent $i \in \N$ at time $t \in \R_{+}$.
 
-Agents have preferences over a fixed finite set of alternatives $\A = \{1,2,\dots, n\}$, e.g.~tasks.  Let $\P(\A)$ be a set of preference relations over $\A$, a subset of the powerset of $\A \times \A$. Elements of a preference relation in $\P(\A)$ are written $a \prefers_i b$, instead of $(a,b)$, and indexed by each agent $i \in \N$, i.e.~\emph{Agent $i$ prefers Alternative $a$ to Alternative $b$}. We say that an agent is indifferent between two alternatives, written $a \indif_i b$, if both $a \prefers_i b$ and $b \prefers_i a$. We assume that initial preferences of all agents satisfy two axioms. The first, \emph{reflexivity}, is ontological: $a \prefers_i a$ for all $a \in \A$. The second is \emph{transitivity}: $a \prefers_i b$, $b \prefers_i c$ implies $a \prefers_i c$. Transitivity is a powerful assumption of logical omniscience \cite{fagin}; agents can deduce their preference between two uncompared alternatives if there is a chain of preferences connecting them. We remark that we do \emph{not} assume preferences are complete, i.e.~for all $a,b \in \A$, $a \prefers_i b$ or $b \prefers_i a$; agents may be indecisive.
+Agents have preferences over a fixed finite set of alternatives $\A = \{1,2,\dots, n\}$, e.g.~tasks.  Let $\Pref(\A)$ be a set of preference relations over $\A$, a subset of the powerset of $\A \times \A$. Elements of a preference relation in $\Pref(\A)$ are written $a \prefers_i b$, instead of $(a,b)$, and indexed by each agent $i \in \N$, i.e.~\emph{Agent $i$ prefers Alternative $a$ to Alternative $b$}. We say that an agent is indifferent between two alternatives, written $a \indif_i b$, if both $a \prefers_i b$ and $b \prefers_i a$. We assume that initial preferences of all agents satisfy two axioms. The first, \emph{reflexivity}, is ontological: $a \prefers_i a$ for all $a \in \A$. The second is \emph{transitivity}: $a \prefers_i b$, $b \prefers_i c$ implies $a \prefers_i c$. Transitivity is a powerful assumption of logical omniscience \cite{fagin}. Agents can deduce a preference between two uncompared alternatives if there is a ``chain'' of connected preferences between them. We remark that we do \emph{not} assume preferences are complete, i.e.~for all $a,b \in \A$, we do not assume $a \prefers_i b$ or $b \prefers_i a$. Thus, an agent may be indecisive, or, alternatively, limited information about an agent's preferences is known.
 
-Let $\boldsymbol{\pi} = \left( \prefers_1, \prefers_2, \dots, \prefers_N \right)$ be a tuple of preferences of all agents, called a \emph{preference profile}. We study how a preference profile changes based on interactions between agents. If $J \subseteq \N$ is a group of agents (possibly a single agent $i \in \N$), we let $\pi_{J}$ be the preference profile restricted the coordinates of $J$ (resp.,~$\pi_i$). Agents update their preferences in a series of rounds indexed by discrete time instants $k=0,1,2,\dots$ according to the dynamics
+\subsection{Modeling Preference Dynamics}
+Let $\boldsymbol{\pi} = \left( \prefers_1, \prefers_2, \dots, \prefers_N \right)$ be a tuple of preferences of all agents, called a \emph{preference profile}. We study how a preference profile changes based on interactions between agents. If $J \subseteq \N$ is a group of agents (e.g.,~$J = \{i\}$), we let $\pi_{J}$ be the preference profile restricted the coordinates of $J$ (e.g.,~$\pi_j$). Agents update their preferences in a series of rounds indexed by discrete time instants $k=0,1,2,\dots$ according to the dynamics
 \begin{align}
     \begin{aligned}
-        \pi_i(k+1) &=& F_i \bigl( \pi(k) \bigr)  \\
+        \pi_i(k+1) &=& F_i \bigl( \boldsymbol{\pi}(k) \bigr)  \\
         \pi_i(0) &=& \pi_{i,0}
     \end{aligned}, \quad i \in \N
     \label{eq:pi-dynamics}
 \end{align}
-where $F_i: \mathbb{N} \times \prod_{i \in \N} \P(\A) \to \P(\A)$ is a time-varying map updating the preference profile at round $k$. Let $\tau > 0$ be the duration between updates, i.e.~$t = 0, \tau, 2 \tau, \dots, k \tau, \dots$ for each $k$. Then, let
+where $F_i$ is a time-varying map updating the preference profile at round $k$. Let $\tau > 0$ be the duration between rounds, then
 \begin{align*}
     \N_i^k = \bigcup_{t \in [k \tau, (k+1)\tau)} \N_i^t
 \end{align*}
-denote the set of agents that $i \in N$ has interacted with in the time interval $[k\tau , (k+1)\tau) \subseteq \R_{+}$.
+is the set of agents that $i \in N$ has interacted with in a round.
+
+We make the following two modeling assumption about how agents update their preferences.
 \begin{assumption}[External influence]\label{ass:external}
-    Agents update their preferences before the start of a new round based on fully-observed preferences of other agents they have interacted with in the previous round.
+    Agents update their preferences before the start of a new round based on only their preferences as well as the (fully-observed) preferences of other agents they have interacted with in the previous round.
 \end{assumption}
-
-Based on our decentralized model of agent-agent interaction, we would also like to specify which agents can influence the next update of a preference relation for a given agent.
-
-\begin{assumption}[Locality]\label{ass:local}
-    The update functions $\{F_i\}_{i \in \N}$ satisfy the following local property
-\begin{align*}
-    F_i \left(\pi_{\N_i^k\cup \{i\}}, \pi_{\N \setminus {\N_i^k \cup \{i\}}} \right) = F_i \left( \pi_{\N_i^k\cup \{i\}}, \pi_{\N \setminus {\N_i^k\cup \{i\}}}' \right)
-\end{align*}
-for all $\boldsymbol{\pi}, \boldsymbol{\pi}' \in \prod_{i \in \N} \P(\A)$.
-\end{assumption}
-
-We also assume $\pi_i(0)$ satisfies the axioms of reflexivity and transitivity, and that, when agents update their preferences, the resulting preference is reflexive and transitive.
-
 \begin{assumption}[Internal coherence] \label{ass:internal}
     Initial preferences $\pi_i(0)$, $i \in \N$ are transitive and reflexive. Furthermore, the update functions $\{ F_i \}_{i \in \N}$ always map transitive-reflexive preference profiles to transitive-reflexive preference relations.
 \end{assumption}
 
-In summary, agents collect preferences as they interact with other agents and, periodically, update their preferences in such a way so that they maintain internal coherence. A first challenge is that there is no straightforward way to ``average,'' or otherwise aggregate, preference relations. After all, preferences are combinatorial objects. How do you design update functions $\{F_i\}_{i \in \N}$ fairly so that stable preference profiles emerge?
+Thus, agents collect preferences as they interact with other agents and, periodically, update their preferences in such a way so that they maintain internal coherence. A first challenge is that there is no straightforward way to ``average,'' or otherwise aggregate, preference relations. After all, preferences are combinatorial objects. How do you design update functions $\{F_i\}_{i \in \N}$ fairly so that stable preference profiles emerge?
 
 \begin{problem} \label{prob:dynamics}
-    Suppose agents interact according \eqref{eq:x-dynamics} and update their preferences according to a dynamical system of the form \eqref{eq:pi-dynamics}. Design updates $\{F_i\}_{i \in \N}$ respecting Assumptions \ref{ass:external}--\ref{ass:internal}, and compute the stable preference profiles of a given mechanism and initial preference profile, precisely, the time-invariant solutions of the global system
-    \begin{align}
-    \begin{aligned}
-        \boldsymbol{\pi}(k+1) &=& \Bigl( F_1\left(\boldsymbol{\pi}(k)\right), F_2\left(\boldsymbol{\pi}(k)\right), \dots, F_N\left(\boldsymbol{\pi}(k)\right)\Bigr)
-    \end{aligned} \label{eq:pi-global-dynamics}
-    \end{align}
-    with initial preference profile $\boldsymbol{\pi}(0) \in \prod_{i \in \N} \P(\A)$.
+    Suppose agents interact according to $\graph(t) = (\N,\edges(t))$ and update their preferences according to a dynamical system of the form \eqref{eq:pi-dynamics} where $\{F_i\}_{i \in \N}$ are designed to model agents with different types of behavior, characterize the fixed points and cycles of the global system
+    \begin{align*}
+        \boldsymbol{\pi}(k+1) &=& \Bigl( F_1\bigl(\pi_1(k) \bigr), F_2\bigl(\pi_2(k) \bigr) \dots, F_N\bigl(\pi_N(k) \Bigr)\biggr) \\
+        \boldsymbol{\pi}(0) &=& \bigl( \pi_{1}(0), \pi_{2}(0) \dots, \pi_{N}(0) \bigr)
+    \end{align*}
 \end{problem}
 
-We characterize the equilibria of \eqref{eq:pi-global-dynamics} under a general class of functions $\{ F_i \}_{i \in \N}$ as well as introduce an algorithm to compute them.
+We characterize the fixed-points of the global dynamics under a general class of functions $\{ F_i \}_{i \in \N}$ as well as suggest an algorithm to compute fixed points.
+
+\subsection{Optimizing Preferences}
 
 A second challenge is to optimize the agents' preferences.
 % Our objective, here, is to design decentralized control policies that restrict the preference dynamics as to align with a human supervisor. If agent $i \in \N$ has an initial preference $\pi_i(0)$, we want to steer the dynamics of $\pi_i(k)$ so that $\pi_i(k)$ converges to a preference that is acceptable to the supervisor, and, perhaps, acceptable along the entire trajectory.
-Acceptability of preferences to the supervisor is modeled, in our formulation, by a notion of metapreference. Given a set of alternatives $\A$, a second-order preference, or simply a \emph{metapreference}, is an element of the set $\P(\P(\A))$, i.e.~a preference relation over the alternative set $\P(\A)$. Metapreference relations are written $\pi \metaprefers \pi'$ for $\pi, \pi \in \P(\A)$. In our framework, the supervisor has a metapreference about the preferences of each agent, possibly the same metapreference. Thus, we index metaprefences by agents, $\pi_i \metaprefers_i \pi_i'$, i.e.~\emph{the Supervisor prefers Agent $i$ has Preference $\pi_i$ over Preference $\pi_i'$}.
-% In order to evaluate preferences by the indices of the agents that hold them, as well as weight the importance $w_{i,k} \in [0,1]$ of the preference $\pi_i(k)$ of agent $i \in \N$ at round $k$, we make the following assumption about the metapreference relations of the supervisor.
+Acceptability of preferences to the supervisor is modeled, in our formulation, by a notion of metapreference. Given a set of alternatives $\A$, a second-order preference, or simply a \emph{metapreference}, is an element of the set $\Pref(\Pref(\A))$, i.e.~a preference relation over the alternative set $\Pref(\A)$. Metapreference relations are written $\pi \metaprefers \pi'$ for $\pi, \pi' \in \Pref(\A)$. Thus, the supervisor has a metapreference about the preferences of each agent, possibly the same metapreference for every agent. Indexing metaprefences by agents, we write $\pi \metaprefers_i \pi'$ for: \emph{the supervisor prefers Agent $i$ has Preference $\pi$ over Preference $\pi'$}. We assume metapreferences are represented by utility functions so that we can apply methods in combinatorial optimization to maximize a metapreference.
 
 \begin{assumption}[Representability] \label{ass:represent}
-    The metapreferences $\{ \metaprefers_i \}_{i \in \N}$ of the supervisor are representable by utility functions $\{ v_i \}_{i \in \N}$
+    The metapreferences $\{ \metaprefers_i \}_{i \in \N}$ of the supervisor are representable by \emph{metapreference utility} functions $\{ v_i \}_{i \in \N}$
     \begin{align}
-        v_i : \P(\A) \to \R, \label{eq:utility-meta}
+        v_i : \Pref(\A) \to \R, \label{eq:utility-meta}
     \end{align}
     i.e.~$\pi \metaprefers_i \pi'$ if and only if $u_i(\pi) \geq u_i(\pi')$.
 \end{assumption}
 
-Utility functions representing a given (meta)preferene relation are not unique. Thus, while the supervisor may have the same metapreference relation for each agent's preferences, the supervisor may design different \emph{metapreference utilities}. Put another way, a metapreference utility is a negative cost for a given agent holding a given preference.
+Utility functions representing a given (meta)preferene relation are not unique, i.e.~utility functions capture more than the relative order of preferences. The values of metapreference utilities reflect the degree to which adding additional relations $a \prefers b$ will increase or decrease utility. The metepreference utilities, we also assume, satisfy the following law of diminishing returns.
 
-\begin{assumption}[Diminishing Returns]
-    The metepreference utilities satisfy the following law of diminishing returns. Suppose $\pi'$ contains $\pi$, i.e.~$\pi' \subseteq \pi$, and the relation $a \prefers b$ is contained in neither $\pi$ nor $\pi'$. Then, the marginal utility of ``adding'' $a \prefers b$ to $\pi$ is greater than the marginal utility of ``adding'' $a \prefers b$ to $\pi'$.
-    % i.e.~
-    % \begin{align}
-    %     v_i(\pi \join 1_{a \prefers b}) - v_i(\pi) \leq v_i(\pi' \join 1_{a \prefers b}) - v_i(\pi')
-    % \end{align}
-    % for every $(a \prefers b) \notin \pi, \pi'$.
+\begin{assumption}[Diminishing Returns] \label{ass:diminishing}
+    Suppose $\pi_1, \pi_2 \in \Pref(\A)$, $\pi_1 \subseteq \pi_2$, and $(a \prefers b) \notin \pi_1$. Then, the marginal utility of adding\footnote{By ``adding'', we mean the transitive closure of $\pi_1 \cup \{a \prefers b\}$, as explained in Section \ref{sec:algebraic}.} $a \prefers b$ to $\pi_1$ is greater than the marginal utility of adding $a \prefers b$ to $\pi_2$.
 \end{assumption}
 
-Optimizing the suitability of agents' preference, in the collective, is, thus, equivalent to maximizing the \emph{social welfare}, the sum value of every agents' preferences (to the supervisor)
+In a system with many agents, our objective is to maximize the \emph{social welfare}, the sum of the utility of every agent's preference.
+\begin{problem}
+    Suppose a supervisor has metapreference about each agent's preferences, represented by utilities $\{v_i\}_{i \in \N}$ (Assumption \ref{ass:represent}) satisfying a law of diminishing returns (Assumption \ref{ass:diminishing}). Assuming each agent updates preferences according to a dynamical system of the form \eqref{eq:pi-dynamics}, find control laws $\{F_i\}_{i \in \N}$ such that $\boldsymbol{\pi}(k)$ converges to a solution to the distributed optimization problem
 \begin{align}
-    \max_{\pi_1,\pi_2,\dots,\pi_N} \sum_{i=1}^N v_i(\pi_i), \label{eq:dist-opt}
+    \max_{\boldsymbol{\pi} = (\pi_1,\pi_2,\dots,\pi_N)} \sum_{i=1}^N v_i(\pi_i). \label{eq:dist-opt}
 \end{align}
-subject to system constraints, e.g.~every agent must converge on a common preference relation, or, more generally, the preferences of each agent evolve according to a specified control system,
-\begin{align}
-    \begin{aligned}
-        \pi_i(k+1) &=& F_i \bigl( \pi(k), q_i(k) \bigr)  \\
-        \pi_i(0) &=& \pi_{i,0}
-    \end{aligned}, \quad i \in \N
-    \label{eq:pi-dynamics-control}
-\end{align}
-where $q_i(k) \in \mathcal{Q}$ is a control input valued in a finite set of controls (i.e~effecting how agents process information they gather in a round).
-
-\begin{problem} \label{prob:optimal-control}
-    Suppose the supervisor has metapreferences represented by utilities $\{v_i\}_{i \in \N}$ (Assumption \ref{ass:represent}). If we assume a time horizon of $K$ rounds, find control inputs $q_i(k)$, $i \in \N$, $k=0,1,\dots,K-1$, such that the cumulative social welfare is maximized, i.e.~solve the optimal control problem
-    \begin{align}
-    \begin{aligned}
-        \max_{q_1, q_2, \dots, q_N} && \sum_{i=1}^N \Biggl( \sum_{k=0}^{K-1} w_{i,k} v_i \left( \pi_i(k) \right) + v_i\left(\pi(K) \right) \Biggr) \\
-        && \text{subject to \eqref{eq:pi-dynamics-control}}&& \\
-            % \pi_i(k+1) &=& F_i \bigl( \pi(k), q_i(k) \bigr), \quad i \in \N \\
-            % \pi_i(0) &=& \pi_{i,0}, \quad i \in \N
-    \end{aligned} \label{eq:optimal-control}
-    \end{align}
-where $w_{i,k} \in [0,1]$ is the weight of importance of $\pi_i(k)$.
 \end{problem}
 
-As a special case of note, if \eqref{eq:pi-dynamics-control} converges to (global) consensus after $K$ rounds---pending connectivity requirements of $\mathcal{G}(t)$---and only the final preference relations are prioritized, i.e.~$w_{i,k} = 0$ for all $i \in N$, $k = 0,1,\dots,K-1$, then Problem \ref{prob:optimal-control} is equivalent to the following distributed optimization problem
-    \begin{align}
-        \begin{aligned}
-            \max_{\pi_1,\pi_2,\dots,\pi_N} && \sum_{i=1}^N v_i(\pi_i) \\
-            \text{subject to} && \\
-            \pi_i &=& \pi_j, \quad \forall i,j \in \N
-        \end{aligned} \label{eq:consensus}.
-    \end{align} 
-\noindent We introduce a greedy algorithm to solve \eqref{eq:consensus} resulting in a plausible control policy for \eqref{eq:optimal-control}.
-
-% We introduce a few notions  We say $u$ is supermodular if
-% \begin{align*}
-%     u( \prefers_i \join \prefers_j) &\geq& u(\prefers_i) + u(\prefers_j) - u(\prefers_i \meet \prefers_j),
-% \end{align*}
-% and modular if the equality holds. The map $u$ is monotone if
-% \begin{align*}
-%     u(\prefers_i) \leq u(\prefers_i) \quad \text{whenever} \quad \prefers_i~\subseteq~\prefers_j,
-% \end{align*}
-% and strictly-monotone whenever the inequality and inclusion are strict.
+We introduce a greedy algorithm to find an approximate solution to \eqref{eq:dist-opt}. In order to provide theoretical optimality guarantees, we restrict the set of preference to preference relations satisfying the \emph{tree-like} property  (Definition \ref{def:tree-like}).
 
 \begin{table}
 \centering
@@ -224,23 +198,27 @@ As a special case of note, if \eqref{eq:pi-dynamics-control} converges to (globa
 \toprule
 Concept & Notation \\
 \midrule
-agent & $i \in \N$ \\
-alternative & $a \in \A$ \\
-preference & $a \prefers_i b$ or $\pi \in \P(\A)$ \\
-preference profile & $\boldsymbol{\pi} = \left(\pi_1,\pi_2,\dots,\pi_N\right)$ \\
-metapreference & $\pi \metaprefers \pi'$ \\
-metapreference (utility) & $v: \P(\A) \to \R$\\
+Agent, & $i \in \N$ \\
+Alternative, & $a \in \A$ \\
+Preference, & $a \prefers_i b$ \\
+Preference profile, & $\boldsymbol{\pi} = \left(\pi_1,\pi_2,\dots,\pi_N\right)$ \\
+Metapreference (relation), & $\pi \metaprefers_i \pi'$ \\
+Metapreference (utility), & $v_i: \Pref(\A) \to \R$\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Algebraic Structure of Preferences}
+\section{Preference Lattices}
+\label{sec:algebraic}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Lattices}
-We leverage the lattice-theoretic \cite{birkhoff1940} structure of preferences to model preference aggregation dynamics. Our model for how agents amalgamate preference is reminiscent of the \emph{calculus of relations} \cite{tarski1941} in which binary and unary operations on binary relations, subsets $\mathcal{R} \subseteq \mathcal{X} \times \mathcal{Y}$, are introduced. A \emph{preorder} is a set $\P$ with a relation $\precsim$ satisfying the axioms of transitivity and reflexivity. Preferences, we assume, are preorders, and we will use both terms interchangeably. A \emph{partial order} is a a preorder, with an order usually written $\preceq$ satisfying a third axiom, called anti-symmetry: if $\pi \preceq \pi'$ and $\pi \preceq \pi'$, then $\pi' = \pi$. Note do not assume preferences satisfy the third axiom because we want to model indifference between alternatives.
+While it is known as a folk-theorem that the set of transitive-reflexive relations with inclusion has the structure of an ordered lattice \cite{birkhoff1940}, we exact this observation and interpret the meaning of the lattice operations \emph{meet} and \emph{join} as binary operations on preferences. Our interpretation for how agents \emph{amalgamate}, i.e.~combine, preferences is reminiscent, in fact a special case of, the calculus of relations \cite{tarski1941}, a series of rules for manipulating (general) binary relations. We begin with some definitions from order theory \cite{roman}.
+
+\subsection{Ordered Sets}
+
+A \emph{preorder} is a set $\P$ with a relation $\precsim$ satisfying the axioms of transitivity and reflexivity. Preferences, we assume, are preorders, and we will use both terms interchangeably. A \emph{partial order} is a a preorder, with an order usually written $\preceq$ satisfying a third axiom, called anti-symmetry: if $\pi_1 \preceq \pi_2$ and $\pi_2 \preceq \pi_1$, then $\pi_1 = \pi_2$. Note do not assume preferences satisfy the third axiom because we want to model indifference between alternatives. Hence, we write $\pi_1 \prec \pi_2$ whenever $\pi_1 \preceq \pi_2$, but $\pi_2 \not \preceq \pi_1$.
  
-\begin{definition}
+\begin{definition} \label{def:lattice}
     An \emph{lattice} is a partial order $(\L, \preceq)$ such that for any two elements $\pi_1, \pi_2 \in \L$, the following operations,
     \begin{align*}
         \begin{aligned}
@@ -250,75 +228,196 @@ We leverage the lattice-theoretic \cite{birkhoff1940} structure of preferences t
     \end{align*}
     called \emph{meet} and \emph{join}, respectively, are well-defined. 
 \end{definition}
-\begin{definition}
-    Equivalently, a \emph{lattice} is a set with binary operations $(\L, \meet, \join)$ satisfying the axioms
+
+We also recall an alternate definition of a lattice, which is well-known \cite{roman} to be equivalent to Definition \ref{def:lattice}.
+
+\begin{definition} \label{def:lattice-axiom}
+    A \emph{lattice} is a set with binary operations $(\L, \meet, \join)$ satisfying the axioms
     \begin{itemize}
-        \item[](C) $\meet$ / $\join$ are commutative, i.e.~$\pi_1 \meet \pi_2 = \pi_2 \meet \pi_1$;
-        \item[] (A) $\meet$ / $\join$ are associative, i.e. {\small $\pi_1 \meet (\pi_2 \meet \pi_3) = (\pi_1 \meet \pi_2) \meet \pi_3$};
-        \item[](I) $\meet$ / $\join$ are idempotent, i.e.~$\pi \meet \pi = \pi$;
-        \item[] (B) $\pi_1 \join \left( \pi_1 \meet \pi_2 \right) = \pi_1$, $\pi_1 \meet \left( \pi_1 \join \pi_2 \right) = \pi_1$.
+        \item[-] \emph{commutativity}, i.e.~$\pi_1 \meet \pi_2 = \pi_2 \meet \pi_1$, $\pi_1 \join \pi_2 = \pi_2 \join \pi_1$;
+        \item[-] \emph{associativity}, i.e. {\small $\pi_1 \meet (\pi_2 \meet \pi_3) = (\pi_1 \meet \pi_2) \meet \pi_3$}, etc.;
+        \item[-] \emph{idempotence}, i.e.~$\pi \meet \pi = \pi \join \pi =  \pi$;
+        \item[-] \emph{absorption}, i.e.~$\pi_1 \join \left( \pi_1 \meet \pi_2 \right) = \pi_1 \meet \left( \pi_1 \join \pi_2 \right) = \pi_1$.
     \end{itemize}
 \end{definition}
 
+Sometimes, lattices can be generated from a set of basic elements. For $\pi_1, \pi_2 \in \L$, we say $\pi_2$ \emph{covers} $\pi_1$, written $\pi_1 \lessdot \pi_2$, if $\pi_1 \preceq \pi_2$ and there is no element $\sigma$ such that $\pi_1 \prec \sigma \prec \pi_2$. An element of a lattice is an \emph{atom} if it covers exactly one element, the bottom element. We let $\Atoms(\L)$ denote the set of atoms in a lattice. A lattice is \emph{atomistic} is every element can be written as a join of atoms, i.e.~$\Atoms(\L)$ generates. Lattices can also be formed from smaller lattices. Cartesian products of lattices $\L_1 \times \L_2 \cdots \times \L_N$ yield lattices under the \emph{product order}: $(\pi_1, \pi_2, \dots, \pi_N) \succeq (\pi_1', \pi_2', \dots, \pi_N')$ if and only if $\pi_i \succeq \pi'_i$ for all $i = 1,2,\dots, N$.
+
+In analyzing the dynamics of preferences, we will need a few notions about maps between lattices. A map $f: \L \to \L'$ between lattices is \emph{monotone} if $\pi_1 \preceq \pi_2$ implies $f(\pi_1) \preceq f(\pi_2)$, \emph{join-preserving} if $f(\pi_1 \join \pi_2) = f(\pi_1) \join f(\pi_1)$, and \emph{meet-preserving} if $f(\pi_1 \meet \pi_2) = f(\pi_1) \meet f(\pi_2)$.
+
+A complete lattice is a partial order such that arbitrary subsets have least upper bounds, e.g.~any finite lattice is complete. In particular, a complete lattice is non-empty. We recall a theorem which guarantees the existence of fixed points of a self-map on a lattice.
+
+\begin{theorem}[Tarski Fixed Point Theorem \cite{tarski}] \label{thm:tfpt}
+    Suppose $\L$ is a complete lattice and $f: \L \to \L$ is an monotone function. Then, $\Fix(F) = \{ \pi \in \L: f(\pi) = \pi \}$ is a complete lattice.
+\end{theorem}
+
+
 \subsection{The Information Order}
 
-Let $\P(\A)$ denote the set of preferences (preorders) on the set $\A$. We equip $\P(\A)$ with a partial order, which we call the \emph{information order}, as follows. Let $\pi_1, \pi_2 \in \P(\A)$. We say $\pi_1 \succeq \pi_2$ if $\pi_2$ is contained in $\pi_1$ as subsets of $\A \times \A$. The interpretation is clear. If $\pi_1 \succeq \pi_2$ in the information order, $\pi_1$ compares at least as many alternatives as $\pi_2$, however, every $(a \prefers_2 b) \in \pi_2$ is present in $\pi_1$ as well. The smallest element (bottom) in the information order is the preference relation, written $\epsilon$, defined $a \prefers a$ for all $a \in \A$. Similarly, the largest element in the information order (bottom), written $\top$, satisfies $a \prefers b$ for all $a,b \in \A$; an agent with this preference is indifferent between every pair of alternatives.
+Let $\Pref(\A)$ denote the set of preorder, hereafter called \emph{preference relations}, on the set $\A$. We equip $\Pref(\A)$ with the partial order inherited from the inclusion order on the powerset of $\A \times \A$, which we call the \emph{information order}. Let $\pi_1, \pi_2 \in \Pref(\A)$. In more detail, we write $\pi_1 \succeq \pi_2$, i.e.~{\it $\pi_1$ contains more information than $\pi_2$}, if $\pi_2$ is contained in $\pi_1$ as subsets of $\A \times \A$. The smallest element in the information order is the preference relation, written $\epsilon$, defined $a \prefers a$ for all $a \in \A$. An agent with this preference relation has not compared any alternatives. The largest element in the information order satisfies $a \prefers b$ for all pairs $(a,b) \in \A \times \A$. An agent with this preference relation is indifferent between any two alternatives. In fact, indifference $a \sim b$ forms an equivalence relation. The set of preference relations over $\A$ contains the set of equivalence relations (or partitions) on $\A$. Thus, the information order defines a metapreference where richer (more indifference) preference relations are always preferred to sparser ones (more indecision).
 
-When agents amalgamate, i.e.~combine, preferences, we want to ensure that the resulting preference relation is transitive and reflexive. This requires a unary operation known as a transitive closure.
+If agents are to compare preferences, we want to ensure that the result of gathering the preferences of two or more agents and collecting them in a single aggregate preference will result in a transitive-reflexive preference as long as the individual preferences are transitive-reflexive (Assumption \ref{ass:internal}). This requires a unary operation known as a transitive-reflexive closure.
 \begin{definition}
     Suppose $\pi \subseteq \A \times \A$. The \emph{transitive closure} of $\pi$ is the preference relation 
 \begin{align}
     \pi^{\star} = \bigcup_{p=1}^{\infty} \overbrace{\pi \circ \pi \circ \cdots \circ \pi}^{p}, \label{eq:transitive-closure}
 \end{align}
-where $\pi \circ \pi = \{ (a \prefers b)~\vert~\exists c,~a \prefers c,~c \prefers b\}$. The \emph{transitive-reflexive closure} of $\pi$ is the preference relation $\pi^{+} = \left( \pi \cup \bot \right)^\star$.
+where $\pi \circ \pi = \{ (a \prefers b)~\vert~\exists c,~a \prefers c,~c \prefers b\}$. The \emph{transitive-reflexive closure} of $\pi$ is the preference relation $\pi^{+} = \left( \pi \cup \epsilon \right)^\star$.
 \end{definition}
 
-The transitive-reflexive closure is an example of a \emph{closure operator}, i.e.~a map $\cl(-): \powerset{\X} \to \powerset{\X}$, given a set $\X$, such that
-\begin{enumerate}
-    \item $\cl(\cl(S)) = \cl(S)$ for all $S \in \powerset{\X}$;
-    \item $\cl(S) \supseteq S$ for all $S \in \powerset{\X}$;
-    \item $S \subseteq S'$ implies $\cl(S) \subseteq \cl(S')$.
-\end{enumerate}
-It is well-known that that the set of closed subsets
-\begin{align*}
-    \Cl(\X) = \{ S \in \powerset{\X}: \cl(S) = S\}
-\end{align*}
-with the order $(\Cl(\X), \subseteq)$ is a lattice. Thus, to show $\left(\P(\A), \succeq \right)$ is a lattice, it suffices to show $(-)^{+}$ is a closure operator on the set $\X = \A \times \A$.
+% The transitive-reflexive closure is an example of a \emph{closure operator}, i.e.~a map $\cl(-): \powerset{\X} \to \powerset{\X}$, given a set $\X$, such that
+% \begin{enumerate}
+%     \item $\cl(\cl(S)) = \cl(S)$ for all $S \in \powerset{\X}$;
+%     \item $\cl(S) \supseteq S$ for all $S \in \powerset{\X}$;
+%     \item $S \subseteq S'$ implies $\cl(S) \subseteq \cl(S')$.
+% \end{enumerate}
+% It is well-known that that the set of closed subsets
+% \begin{align*}
+%     \Cl(\X) = \{ S \in \powerset{\X}: \cl(S) = S\}
+% \end{align*}
+% with the order $(\Cl(\X), \subseteq)$ is a lattice.
 
-We say $\pi_2$ \emph{covers} $\pi_1$, written $\pi_1 \lessdot \pi_2$, if $\pi_1 \preceq \pi_2$ and there is no element $\sigma$ such that $\pi_1 \prec \sigma \prec \pi_2$. An element of a lattice is an \emph{atom} if it covers exactly one element, the bottom element. We let $\Atoms(\L)$ denote the set of atoms in a lattice. The atoms of $\P(\A)$ are of the form
-\begin{align*}
-    \epsilon_{a \prefers b} = \epsilon \cup (a \prefers b).
-\end{align*}
-where $a, b \in \A$ and $a \neq b$.
-A lattice is \emph{atomistic} is every element can be written as a join of atoms, i.e.~$\Atoms(\L)$ generates.
-A lattice is \emph{semimodular} if $\pi_1 \meet \pi_2 \lessdot \pi_2$ implies $\pi_2 \lessdot \pi_1 \join \pi_2$.
+The transitive closure as well as the union and intersection of preference relations are enough to specify the structure of a lattice.
 
 \begin{theorem}
-    $(\P(\A), \succeq)$ is a finite semimodular atomistic lattice, i.e.~a \emph{geometric lattice}.
-\end{theorem}
-\begin{proof}
-See Appendix.
-\end{proof}
-
-\subsection{Meets \& Joins of Preferences}
-Joins and meets of preference relations, under the information order, are given by the following operations
-\begin{align}
+    $(\Pref(\A), \succeq)$ is a lattice with meets and joins given by the following
+    \leavevmode
+    \begin{align}
     \begin{aligned}
         \pi_1 \meet \pi_2 &=& \pi_1 &\cap \pi_2& \\
  \pi_1 \join \pi_2 &=&  \left(\pi_1  \right. &\left. \cup \pi_2  \right)^{+}
     \end{aligned}. \label{eq:join-meets}
 \end{align}
+\end{theorem}
+
+We briefly interpret the meet and join operations of the \emph{information lattice}. A preference $a \prefers b$ is in the meet $\pi_1 \meet \pi_2$ if and only if it is in both $\pi_1$ and $\pi_2$. Thus, the meet of two preference relations constitutes a consensus between them. The join is somewhat more subtle. For one, by the fact that the transitive-reflexive closure satisfies the criterion for being a \emph{closure operator} \cite{roman}, $\pi_1 \join \pi_2$ is the smallest transitive-reflexive relation containing $\pi_1 \cup \pi_2$. Another interpretation spells out what it means for a pair-wise comparison to be in the join of two preference relations.
+\begin{proposition}
+    Suppose $\pi_1, \pi_2 \in \Pref(\A)$. Then, $(a \prefers b) \in \pi_1 \join \pi_2$ if and only if either, (i) $(a \prefers b) \in \pi_1 \cup \pi_2$, or, (ii) there exist a chain
+    \begin{align}
+        a = c_0 \prefers_{j_1} c_1 \prefers_{j_2} c_2 \prefers_{j_3} \cdots \prefers_{\ell-1} c_{j_{\ell-1}} \prefers_{j_\ell} c_{\ell} = b \label{eq:chain}
+    \end{align}
+    such that $\left( c_{m-1} \prefers_{{j_m}} c_{m} \right) \in \pi_1 \Delta \pi_2$ (symmetric difference).
+\end{proposition}
+
+Thus, the join of two preference relations facilitates the rational, i.e.~transitive, conclusion of two agents having merged their preferences.
 
 \begin{remark}
-    The information order defines a metapreference where richer preference relations are always prefered to sparser ones. It is also possible to design arbitrary lattice orders on $\P(\A)$. In this case, if $(\P(\A), \metaprefers)$ is a lattice, joins and meets have the following interpretation: The join of two preferences $\pi_1 \join \pi_2$ is the (unique) worst preference that is at least as good as both $\pi_1$ and $\pi_2$. Similarly, the meet of two preferences $\pi_1 \meet \pi_2$ is the (unique) best preference $\pi_1 \meet \pi_2$ such that $\pi_1$ and $\pi_2$ are as least as good as it. In the future, we want to consider metapreference lattices and semilattices, other than the information order.
+    It is also possible to design arbitrary lattice orders on $\Pref(\A)$. In this case, meets and joins have the following interpretation: the join of two preferences is the (unique) worst preference that is at least as good as both preference. Similarly, the meet of two preferences is the (unique) best preference such that both preferences are as least as good as it. We leave this approach to future work.
+\end{remark}
+\begin{remark}
+    We call the lattice $(\Pref(\A), \succeq)$ an ``information order'' due to the fact that an analogous order on the set of equivalence relations, i.e.~partitions, on a fixed set, which forms a proper subset of $\Pref(\A)$, was called an ``information order'' because of its relevance in information theory \cite{shannon}.
+\end{remark}
+\begin{remark}
+    According to Definition \ref{def:lattice-axiom}, the meet and join operations on $\Pref(\A)$ may be defined axiomatically. The associativity and commutativity axioms imply that the order a series of meets or joins are performed does not matter. The idempotence and the absorption axioms constrain how new preferences may be formed by meeting or joining with existing preferences.
 \end{remark}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Preference Dynamics}
+
+In this section, we introduce a novel model of preference dynamics based on the structure of the information lattice. In the spirit of opinion dynamic models such as the DeGroot model \cite{degroot1974} or the Hegselmann-Krause model \cite{hegselmann2002}, we proceed by defining simple rules for agents aggregating information by collecting and processing the preference relations of neighboring agents, $j \in \N_i^k$, with respect to the dynamic graph $\graph(t)$.
+
+\subsection{Aggregation Mechanisms}
+
+We model how agents update their prefences in the course of a round in the manner of a message-passing algorithm (Algorithm \ref{alg:messsage-passing}). The algorithm follows the usual gather-scatter paradigm \cite{dudzik}. Agents send messages to their neighbors in each round. Messages, we assume, consist of applying a function $\psi(\pi_i,\pi_j)$ sending two preference relations $\pi_i, \pi_j, j \in \N_i^k$ to a another preference relation on the same alternative set.
+% If $\psi(\pi_i,\pi_j) = \pi_j$, then Agent $j$ represents their preference faithfully and communicates it to Agent $i$. Otherwise, Agent $j$ alters its preference, (possibly) based on an estimate of $\pi_i$ as well as $\pi_j$. In an allusion to the diffusion equations, message passing algorithms with messages  $m_j \gets \psi(\pi_j)$ have been referenced as \emph{isotropic} \cite{dudzik}.
+Next, collecting the messages received in a round, agents aggregate the messages they have received. Thus, a function $\Aggregate(\cdot)$ takes a list of preference relations and returns a single preference relation. Finally, a function $\varphi(\pi_i,\cdot)$ the prior preference $\pi$ (likely) as a result of the aggregation. Algorithm \ref{alg:messsage-passing}, thus, can be summarized by the choice of a function
+\begin{align}
+    F_i(\boldsymbol{\pi}) = \varphi\Bigl(\pi_i, \Aggregate{\left[ \psi(\pi_j, \pi_i)\right]_{j \in \N_i^k}} \Bigr)
+\end{align}
+in the local updates $\pi_i(k+1) = F_i\left( \boldsymbol{\pi}(k) \right)$. We comment on some potential candidates for the functions $\psi, \Aggregate(\cdot)$, and $\varphi$.
+
+\begin{algorithm}[t]
+\caption{Updating Preferences} \label{alg:messsage-passing}
+\SetKwComment{Comment}{/* }{ */}
+\KwData{Preference $\pi_i, i \in \N$; neighbors $\pi_j, j \in \N_i^k$.}
+\For{$k = 0,1,2,\dots$}{
+$\mathcal{M} \gets [~]$ \\
+\For{$j \in \N_i^k$}{
+Agent $j$ sends $\mathsf{Message}(\pi_j,\pi_i)$ to Agent $i$ \\
+Agent $i$ receives $m_{j} \gets \mathsf{Message}(\pi_j,\pi_i)$ \\
+Agent $i$ appends $m_{j}$ to $\mathcal{M}$ 
+}
+$\pi' \gets \mathsf{Aggregate}\left( \mathcal{M} \right)$ \\
+$\pi_i \gets \mathsf{Update}(\pi_i, \pi')$
+}
+\end{algorithm}
+
+\paragraph*{Messages}
+In an allusion to the diffusion equations, message functions $\psi(\pi_j,\pi_i)$ that are invariant to the second argument are said to be \emph{isotropic} because there is no feedback in the resulting diffusion process. In the isotropic case, if $\psi(\pi_j) = \pi_j$, then Agent $j$ represents their preference faithfully and communicates it to Agent $i$. Such agents can be though as being honest. Dishonest misrepresents their true preferences with a map $\psi: \Pref(\A) \to \Pref(\A)$. In the opinion dynamics literature \cite{hansen2021}, behaviors such as exaggerating opinions, restricting the topics of discussion, or lying can be represented by similar maps. We expect analogous behaviors to be modeled with appropriate transformations of preference relations. In the non-isotropic case, agents represent their preferences as a result of feedback. In the simplest case, Agent $j$ could pretend its preference is the same as Agent $i$, i.e $\psi(\pi_j,\pi_i) = \pi_i$, but more complex feedback mechanisms are possible.
+
+\paragraph*{Aggregation}
+It is commonly assumed in message-passing algorithms that the order messages are received has no bearing on the resulting aggregate preference. In the present case, this means that the identities of the agents are anonymous, or, at least, every neighbor $j \in \N_i^k$ is given equal weight. The lattice structure of the information order on preferences provides a natural hierarchy of aggregation functions which we now examine.
+
+\emph{Lattice medians} generalize the notion of a median of a set of numbers. Since there is no way to ``average'' preferences numerically, the lattice median seems a good fit for an aggregation mechanism that can produce stable preference profiles.
+\begin{definition}
+    Suppose $i \in \N$. Then, the $r$-median of  $\pi_{\N_i^k}$ is given by the function
+\begin{align}
+    \Median_r(\pi_{\N_i^k}) = \bigjoin \Bigl\{ \bigmeet_{j \in J} \pi_j~:~J \subseteq \N_i^k,~|J| \geq r \Bigr\}.
+\end{align}
+\end{definition}
+
+A few special cases of medians are of note. If $r= |\N_i^k|$, then the median is the meet
+\begin{align*}
+   \bigjoin_{j \in \N_i^k} \pi_j,
+\end{align*}
+while if $r=1$, the median is the join
+\begin{align*}
+     \bigmeet_{j \in \N_i^k} \pi_j.
+\end{align*}
+In between, $r = \lceil |\N_i^k|/2 \rceil$ is a natural generalization of majority rule \cite{leclerc}.
+
+Medians of preference relations have the following interpretation.
+\begin{proposition}
+    Suppose $1 \leq r \leq |\N_i^k|$. A given preference $a \prefers b$ is in $\Median_r(\pi_{\N_i^k})$ if and only if there exist a chain
+    \begin{align*}
+        a = c_0 \prefers_{j_1} c_1 \prefers_{j_2} \cdots \prefers_{\ell-1} c_{j_{\ell-1}} \prefers_{j_\ell} c_{\ell} = b
+    \end{align*}
+    and a federation of neighbors \[\{ J_m, |J_m| \geq r \}_{m=1}^{\ell} \subseteq \N_i^k\] such that $(c_{m-1} \prefers_{j_m} c_{m}) \in \pi_j$ for all  $j \in J_m$.
+\end{proposition}
+ 
+\subsection{Fixed Points}
+
+\begin{lemma}
+\end{lemma}
+
+
+% \begin{axiom}
+%     Suppose for $\pi, \pi' \$F(\pi_1, \pi_2, \dots, \pi_N) = $
+% \end{axiom}
+
+
+
+
+
+\section{Metapreferences}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Tree-Like Preferences}
+
+We say $\pi \in \Pref(\A)$ is \emph{tree-like} if for every $a_1 \prefers b$
+
 \subsection{Greedoids}
-% It is well-know that there is a one-to-one correspondence---called a cryptomorphism due to the mysterious connection it establishes \cite{whitney}---between geometric lattices and combinatorial objects called matroids, but the full details of the correspondence are beyond the scope of this paper.
+
+\begin{lemma}
+    The atoms of $\Pref(\A)$ are of the form
+    \begin{align*}
+        \epsilon_{a \prefers b} = \epsilon \cup (a \prefers b).
+    \end{align*}
+    where $a, b \in \A$ and $a \neq b$.
+\end{lemma}
+
+\begin{proposition}
+    $(\Pref(\A), \succeq)$ is atomistic.
+\end{proposition}
+\begin{proof}
+See Appendix.
+\end{proof}
 
 \begin{definition}
     A \emph{greedoid} is a finite set $\X$ together with a collection of subsets $\I$ such that if $I, I' \in \mathcal{I}$ and $|I| < |I'|$, then for some $x \in I' \setminus I$, $I \cup \{x\} \in \I$.
 \end{definition}
+
 If $\cl(-): \powerset{\X} \to \powerset{\X}$ is a closure operator satisfying the additional axiom,
 \begin{enumerate}
     \item[4)] if $x \notin \cl(S)$, but $x \in \cl(S \cup \{y\})$, then $y \in \cl(S \cup \{x\})$,
@@ -341,40 +440,13 @@ then, define $(\X,\I_{\cl})$ by
     See Appendix.
 \end{proof}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Maximizing Metapreference}
-
-\subsection{Aggregation Functions}
-
-An \emph{aggregation function} is defined as a map $F_i: \prod_{i \in \N} \P(\A) \to \P(\A)$. We assume that aggregation functions are a class of functions called \emph{lattice polynomials}.
-\begin{definition}
-    A \emph{lattice polynomial} is a term in the language
-    \begin{align*}
-        \pi_1, \dots, \pi_N~\vert~\pi \meet \pi'~\vert~\pi \join \pi'
-    \end{align*}
-    (with parentheses).
-\end{definition}
-
-We restrict our attention to aggregation functions that are lattice polynomials $F_i(\pi_1,\pi_2, \dots, \pi_N)$.
-
-\begin{align}
-    F_i(\boldsymbol{\pi}) = \varphi_i \Bigl( \pi_i, \bigoplus_{j \in \N_i^k} \pi_j \Bigr)
-\end{align}
-
-
-We consider a broad class of aggregation functions called $r$-medians which are defined on semimodular lattices \cite{leclerc}.
-
-% \begin{axiom}
-%     Suppose for $\pi, \pi' \$F(\pi_1, \pi_2, \dots, \pi_N) = $
-% \end{axiom}
-
-
-
-
-
-\section{Preference Optimization}
+\section{Experiments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \bibliographystyle{ieeetr}
 \bibliography{IEEEabrv,biblio}
