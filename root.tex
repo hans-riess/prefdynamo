@@ -22,6 +22,7 @@
 \newcommand{\X}{\mathcal{X}}
 \newcommand{\I}{\mathcal{I}}
 \renewcommand{\P}{\mathcal{P}}
+\renewcommand{\S}{\mathcal{S}}
 \newcommand{\Pref}{\mathrm{Pref}}
 \renewcommand{\L}{\mathcal{L}}
 \newcommand{\prefers}{\succsim}
@@ -127,7 +128,7 @@ Agents $\N = \{1,2,\dots, N\}$ with positions $x_1, x_2, \dots, x_N$ are located
 % with initial positions $x_i(0) \in \R^d$ and control input $u_i(t) \in \R^m$.
 We assume agents $i, j \in \N$ interact if $\| x_i - x_j \| < \rho$ for some $\rho>0$. The interaction graph of agents is given by $\graph(t) = \left( \N, \edges(t) \right)$ where $(i,j) \in \mathcal{E}(t)$ if and only it $\| x_i(t) - x_j(t) \| \leq \rho$. We denote $\N_i^t = \{ j \in \N: \| x_i(t) - x_j(t) \| \leqslant \rho \}$ to be the neighbors of agent $i \in \N$ at time $t \in \R_{+}$.
 
-Agents have preferences over a fixed finite set of alternatives $\A = \{1,2,\dots, n\}$, e.g.~tasks.  Let $\Pref(\A)$ be a set of preference relations over $\A$, a subset of the powerset of $\A \times \A$. Elements of a preference relation in $\Pref(\A)$ are written $a \prefers_i b$, instead of $(a,b)$, and indexed by each agent $i \in \N$, i.e.~\emph{Agent $i$ prefers Alternative $a$ to Alternative $b$}. We say that an agent is indifferent between two alternatives, written $a \indif_i b$, if both $a \prefers_i b$ and $b \prefers_i a$. We assume that initial preferences of all agents satisfy two axioms. The first, \emph{reflexivity}, is ontological: $a \prefers_i a$ for all $a \in \A$. The second is \emph{transitivity}: $a \prefers_i b$, $b \prefers_i c$ implies $a \prefers_i c$. Transitivity is a powerful assumption of logical omniscience \cite{fagin}. Agents can deduce a preference between two uncompared alternatives if there is a ``chain'' of connected preferences between them. We remark that we do \emph{not} assume preferences are complete, i.e.~we do not assume for all $a,b \in \A$, $a \prefers_i b$ or $b \prefers_i a$. Thus, an agent may be indecisive, or, alternatively, limited information about an agent's preferences is known.
+Agents have preferences over a fixed finite set of alternatives $\A = \{1,2,\dots, M\}$, e.g.~tasks.  Let $\Pref(\A)$ be a set of preference relations over $\A$, a subset of the powerset of $\A \times \A$. Elements of a preference relation in $\Pref(\A)$ are written $a \prefers_i b$, instead of $(a,b)$, and indexed by each agent $i \in \N$, i.e.~\emph{Agent $i$ prefers Alternative $a$ to Alternative $b$}. We say that an agent is indifferent between two alternatives, written $a \indif_i b$, if both $a \prefers_i b$ and $b \prefers_i a$. We assume that initial preferences of all agents satisfy two axioms. The first, \emph{reflexivity}, is ontological: $a \prefers_i a$ for all $a \in \A$. The second is \emph{transitivity}: $a \prefers_i b$, $b \prefers_i c$ implies $a \prefers_i c$. Transitivity is a powerful assumption of logical omniscience \cite{fagin}. Agents can deduce a preference between two uncompared alternatives if there is a ``chain'' of connected preferences between them. We remark that we do \emph{not} assume preferences are complete, i.e.~we do not assume for all $a,b \in \A$, $a \prefers_i b$ or $b \prefers_i a$. Thus, an agent may be indecisive, or, alternatively, limited information about an agent's preferences is known.
 
 \subsection{Modeling Preference Dynamics}
 Let $\boldsymbol{\pi} = \left( \prefers_1, \prefers_2, \dots, \prefers_N \right)$ be a tuple of preferences of all agents, called a \emph{preference profile}. We study how a preference profile changes based on interactions between agents. If $J \subseteq \N$ is a group of agents (e.g.,~$J = \{i\}$), we let $\pi_{J}$ be the preference profile restricted the indices in $J$ (e.g.,~$\pi_j$). Agents update their preferences in a series of rounds indexed by discrete time instants $k=0,1,2,\dots$ according to coupled time-variant dynamics
@@ -261,7 +262,7 @@ We recall a set of axioms that characterize lattices as algebraic structures.
 
 \subsection{The Information Order}
 
-Let $\Pref(\A)$ denote the set of preorder, hereafter called \emph{preference relations}, on the set $\A$. We equip $\Pref(\A)$ with the partial order inherited from the inclusion order on the powerset of $\A \times \A$, which we call the \emph{information order}. Let $\pi_1, \pi_2 \in \Pref(\A)$. In more detail, we write $\pi_1 \succeq \pi_2$, i.e.~{\it $\pi_1$ contains more information than $\pi_2$}, if $\pi_2$ is contained in $\pi_1$ as subsets of $\A \times \A$. The smallest element in the information order is the preference relation, written $\epsilon$, defined $a \prefers a$ for all $a \in \A$. An agent with this preference relation has not compared any alternatives. The largest element in the information order satisfies $a \prefers b$ for all pairs $(a,b) \in \A \times \A$. An agent with this preference relation is indifferent between any two alternatives. In fact, indifference $a \sim b$ forms an equivalence relation. The set of preference relations over $\A$ contains the set of equivalence relations (or partitions) on $\A$. Thus, the information order defines a metapreference where richer (more indifference) preference relations are always preferred to sparser ones (more indecision).
+Let $\Pref(\A)$ denote the set of preorder, hereafter called \emph{preference relations}, on the set $\A$. We equip $\Pref(\A)$ with the partial order inherited from the inclusion order on the powerset of $\A \times \A$, which we call the \emph{information order}. Let $\pi_1, \pi_2 \in \Pref(\A)$. In more detail, we write $\pi_1 \succeq \pi_2$, i.e.~{\it $\pi_1$ contains more information than $\pi_2$}, if $\pi_2$ is contained in $\pi_1$ as subsets of $\A \times \A$. The minimum element in the information order is the preference relation, written $\epsilon$, defined $a \prefers a$ for all $a \in \A$. An agent with this preference relation has not compared any alternatives. The maximum element, written $\iota$, in the information order satisfies $a \prefers b$ for all pairs $(a,b) \in \A \times \A$. An agent with this preference relation is indifferent between any two alternatives. In fact, indifference $a \sim b$ forms an equivalence relation. The set of preference relations over $\A$ contains the set of equivalence relations (or partitions) on $\A$. Thus, the information order defines a metapreference where richer (more indifference) preference relations are always preferred to sparser ones (more indecision).
 
 If agents are to compare preferences, we want to ensure that the result of gathering the preferences of two or more agents and collecting them in a single aggregate preference will result in a transitive-reflexive preference as long as the individual preferences are transitive-reflexive (Assumption \ref{ass:internal}). This requires a unary operation known as a transitive-reflexive closure.
 \begin{definition}
@@ -331,7 +332,7 @@ We model how agents update their prefences in the course of a round in the manne
 % If $\psi(\pi_i,\pi_j) = \pi_j$, then Agent $j$ represents their preference faithfully and communicates it to Agent $i$. Otherwise, Agent $j$ alters its preference, (possibly) based on an estimate of $\pi_i$ as well as $\pi_j$. In an allusion to the diffusion equations, message passing algorithms with messages  $m_j \gets \psi(\pi_j)$ have been referenced as \emph{isotropic} \cite{dudzik}.
 Next, after collecting the messages as they are received (Line 5-6), agents aggregate the messages into a single preference relation (Line 8). Finally, the agents update their preference as a result of the aggregation and their prior-held preference via a function  $\varphi(\pi_i,\cdot)$. Algorithm \ref{alg:messsage-passing}, thus, can be summarized by a choice of a function
 \begin{align}
-    F_i(\boldsymbol{\pi}) = \varphi\Bigl(\pi_i, \Aggregate{\left[ \psi(\pi_j, \pi_i)\right]_{j \in \N_i^k}} \Bigr)
+    F_i(\boldsymbol{\pi}) = \varphi\Bigl(\pi_i, \Aggregate{\left[ \psi(\pi_j, \pi_i)\right]_{j \in \N_i^k}} \Bigr) \label{eq:message-passing}
 \end{align}
 for the local preference updates $\pi_i(k+1) = F_i\left( \boldsymbol{\pi}(k) \right)$.
 
@@ -356,7 +357,7 @@ $\pi_i \gets \mathsf{Update}(\pi_i, \pi')$
 \end{algorithm}
 
 \paragraph*{Messages}
-Message functions $\psi(\pi_j,\pi_i)$ that are invariant to the second argument are said to be \emph{isotropic} because there is no feedback in the resulting ``diffusion'' process. In the isotropic case, if $\psi(\pi_j) = \pi_j$, Agent $j$ represents their preference faithfully and communicates it to Agent $i$. Such agents can be thought of as being honest. Dishonest agents misrepresent their true preferences with a non-trivial map $\psi: \Pref(\A) \to \Pref(\A)$. In the opinion dynamics literature \cite{hansen2021}, behaviors such as exaggerating opinions, restricting the topics of discussion, or lying can be represented by similar maps. We expect analogous behaviors to be modeled with appropriate transformations of preference relations. In the non-isotropic case, agents represent their preferences as a result of feedback. In the simplest instance, Agent $j$ could pretend its preference is the same as Agent $i$, i.e.~$\psi(\pi_j,\pi_i) = \pi_i$, but more complex feedback mechanisms are possible.
+Message functions $\psi(\pi_j,\pi_i)$ that are invariant to the second argument are said to be \emph{isotropic} because there is no feedback in the resulting ``diffusion'' process. In the isotropic case, if $\psi(\pi_j) = \pi_j$, Agent $j$ represents their preference faithfully and communicates it to Agent $i$. Such agents can be thought of as being honest. Dishonest agents misrepresent their true preferences with a non-trivial map $\psi: \Pref(\A) \to \Pref(\A)$. In the opinion dynamics literature \cite{hansen2021}, behaviors such as exaggerating opinions, restricting the topics of discussion, or lying can be represented by similar maps. We expect analogous behaviors to be modeled with appropriate transformations of preference relations. In the non-isotropic case, agents represent their preferences as a result of feedback. In the simplest instance, Agent $j$ could pretend its preference is the same as Agent $i$, i.e.~$\psi(\pi_j,\pi_i) = \pi_j$, but more complex feedback mechanisms are possible.
 
 \paragraph*{Aggregation}
 It is commonly assumed in message-passing algorithms that the order messages are received has no bearing on the resulting aggregate preference \cite{?}. In the present case, this means that the identities of the agents are anonymous, or, at least, every neighbor $j \in \N_i^k$ is treated equally. The lattice structure of the information order on preferences provides a natural hierarchy of aggregation functions which we now examine.
@@ -398,7 +399,7 @@ We examine four update functions which, along with the a choice of $\psi$ and $\
 In our discussion of mechanisms of sharing, aggregating and updating preferences, we considered maps $\psi$, $\Aggregate(\cdot)$, and $\varphi$ that are monotone. In fact, except for a possibly non-trivial message-generating map $\psi$, by Lemma \ref{lem:polynomial}, message and update functions that are either meets, joins, or projections, as well as aggregation functions that are lattice polynomials, are monotone. Hence, by Lemma \ref{lem:compose-produt}, the maps $F_i: \Pref(\A)^N \to \Pref(\A)$ and the map $F = (F_1,F_2,\dots,F_N)$ are monotone, as well as iterations of $F$, i.e.~in $\boldsymbol{\pi}(k) = F^k \bigl( \boldsymbol{\pi}(0) \bigr)$. This observation is summarized by the following assumption.
 
 \begin{assumption}[Monotonicity] \label{ass:monotone}
-    The go-forward map $F$ of the global preference dynamics \eqref{eq:pi-global} is monotone with respect to the product information order on $\Pref(A)^N$.
+    The iterated map $F$ of the global preference dynamics \eqref{eq:pi-global} is monotone with respect to the product information order on $\Pref(A)^N$.
 \end{assumption}
 
 In this section, leveraging Assumption \ref{ass:monotone}, we study the equilibrium points, the time-invariant solutions of \eqref{eq:pi-global}, propose an algorithm to compute them, and discuss cycles emerging in the dynamics. First, we recall a few definitions and a theorem about the fixed points of monotone maps. 
@@ -407,7 +408,7 @@ In this section, leveraging Assumption \ref{ass:monotone}, we study the equilibr
 
 Suppose $F: \P \to \P$ is a monotone map on a partial-order $\P$. Let $\Fix(F) = \{ \pi \in \L: F(\pi) = \pi \}$ denote the set of fixed points, $\Pre(F) = \{ \pi \in \L : F(\pi) \preceq \pi\}$ the set of \emph{prefix points}, and $\Post(F) =\{ \pi \in \L : F(\pi) \succeq \pi\}$ the set of \emph{suffix points}. If they exist, let $\lfp(F)$ and $\gfp(F)$ denote the least and greatest fixed points, respectively. A partial order is a \emph{complete lattice} if arbitrary subsets have least upper bounds; e.g.~a finite lattice is complete. A complete lattice has, at a bare minimum, a least element (join of the empty-set) and a greatest element (meet of the empty-set). We recall a theorem which guarantees the existence of fixed points of a self-map on a lattice.
 
-\begin{lemma}[Tarski Fixed Point Theorem \cite{tarski}] \label{thm:tfpt}
+\begin{lemma}[Tarski Fixed Point Theorem \cite{tarski}] \label{lem:tfpt}
     Suppose $\P$ is a complete (e.g.~finite) lattice and $F: \P \to \P$ is monotone. Then, $\Fix(F) \subseteq \P$ is a complete lattice.
 \end{lemma}
 
@@ -415,18 +416,78 @@ The Tarski Fixed Point Theorem implies the following result which characterized 
 
 \begin{theorem}
     Suppose $\boldsymbol{\pi}(k+1) = F \bigl( \boldsymbol{\pi}(k) \bigr)$ with initial condition $\boldsymbol{\pi}(0) \in \Pref(\A)^N$ is a dynamical system on preference profiles satisfying Assumption \ref{ass:monotone}. Then, the time-invariant solutions
+    \begin{align*}
+        \mathcal{S} = \{ \boldsymbol{\pi} \in \Pref(\A)^N: \exists k_0 \geq 0,~\boldsymbol{\pi}(k_0+k) = \boldsymbol{\pi}~\forall~k \geq k_0 \}
+    \end{align*}
     form a complete lattice.
 \end{theorem}
+\begin{corollary}
+    The solution set $\S$ is nonempty and has a least and greatest element, $\bigmeet \S$ and $\bigjoin \S$, respectively.
+\end{corollary}
 
 Thus, equilibrium points of preference dynamics exist, although are not, in general, unique. However, by virtue of the fixed points forming a lattice, there exist unique greatest and least least equilibrium points with respect to the product information order. The greatest (resp.~least) equilibrium point is the stable preference profile with the most (resp.~least) alternatives compared.
 
-
 \subsection{Computing Equilibrium Points}
 
-The Tarski Fixed Point Theorem \ref{tarski} is well-known to be non-constructive; the proof does not provide an algorithm to compute fixed points, only guarantees their existence.
 
 
-\subsection{Cycles}
+The Tarski Fixed Point Theorem (Lemma \ref{lem:tfpt}) is well-known to be non-constructive; the proof does not provide an algorithm to compute fixed points, only guarantees their existence. However, for some initial conditions, we show that all trajectories eventually converge to an equilibrium point.
+
+% We will need a definition. Suppose $\P$ is a partial order. Recall, for $\pi_1,\pi_2 \in \P$, an \emph{interval} is a subset defined $[\pi_1,\pi_2] = \{ \pi' : \pi_1 \preceq \pi' \preceq \pi_2 \}$. A chain $\gamma$ in $\P$ is a sequence $\pi_0 \preceq \pi_1 \preceq \cdots \preceq \pi_{\ell}$. The length of $\gamma$, written $|\gamma|$, is the $\ell$.
+
+% \begin{definition}
+%     Suppose $\P$ is a partial order with bottom element $\bot$. A \emph{height function} on a lattice $\L$ is a map $h: \L \to \mathbb{N}$ defined $h(x) =  \max\{ |\gamma|:\gamma~\text{is a chain in}~[\bot,\pi] \}.$
+% \end{definition}
+
+% It follows that the height function is monotone with respect to the order $(\mathbb{N},\leq)$ and $h(\bot) = 0$.
+
+
+\begin{proposition} \label{prop:initial-conditions}
+    Suppose $\boldsymbol{\pi}(0) \in \Pre(F) \cup \Post(F)$. Then, $\boldsymbol{\pi}(k)$ converges to a fixed point in a finite number of iterations.
+\end{proposition}
+\begin{proof}
+    We show the first case. (The second follows by order duality.) Suppose $\boldsymbol{\pi}(0) \in \Pre(F)$. Then, by monotonicity of $F$, $\boldsymbol{\pi}(0) \preceq F\left(\boldsymbol{\pi}(0) \right)$. Continuing to apply monotonicity implies
+    \begin{align}
+        F^{k+1}\left( \boldsymbol{\pi}(0)\right)  = \boldsymbol{\pi}(k+1) \preceq \boldsymbol{\pi}(k) \preceq \cdots \preceq \boldsymbol{\pi}(0) \label{eq:chain}
+    \end{align} For each $k$, either $\boldsymbol{\pi}(k+1) \prec \boldsymbol{\pi}(k)$, or $\boldsymbol{\pi}(k+1) = \boldsymbol{\pi}(k)$, in which case $\boldsymbol{\pi}(k) \in \Fix(F)$. Because the set of alternatives $\A$ is finite, $\Pref(\A)$ is finite, which implies every chain is finite. Thus, the chain \eqref{eq:chain} either converges to the trivial preference $\epsilon$, which, then, is necessarily a fixed point, or otherwise converges to another fixed point, the preference at which the decreasing chain terminates.
+    % Hence, by monotonicity of the height function, $\{h\bigl(\boldsymbol{\pi}(k) \bigr) \}_{k=0}^{\infty}$ is a monotonically non-increasing function bounded below by $h(\epsilon) = 0$.
+\end{proof}
+
+The following corollary specifies how to compute the greatest and least equilibrium points.
+
+\begin{corollary}
+    The initial conditions $\boldsymbol{\pi}(0) = (\epsilon,\epsilon,\dots,\epsilon)$ and $\boldsymbol{\pi}(0) = (\iota,\iota, \cdots, \iota)$ converges to $\lfp(F)$ and $\gfp(F)$, respectively.
+\end{corollary}
+
+If the update function we choose is non-increasing in $\pi_i$, e.g.~$\varphi(\pi_i,\pi) = \pi_i \meet \pi$, or non-decreasing in $\pi_i$, eg.~ $\varphi(\pi_i,\pi) = \pi_i \join \pi$, then we are also guaranteed to converge to a fixed point.
+
+\begin{corollary}
+    If, in the model \eqref{eq:message-passing}, the update function is either non-increasing for every $\pi_i$, i.e.~$\varphi(\pi_i,\cdot) \preceq \pi_i$, or non-decreasing for every $\pi_i$, i.e.~$\varphi(\pi_i,\cdot) \succeq \pi_i$, then every initial $\boldsymbol{\pi}(0)$ converges to a fixed point.
+\end{corollary}
+
+\begin{algorithm}[t]
+\caption{Computing an equilibrium point} \label{alg:find-fixed}
+\SetKwComment{Comment}{/* }{ */}
+\KwData{$N$ agents, $M$ alternatives; iterative map $F = (F_1,\dots,F_N)$ of preference dynamics.}
+\KwResult{Equilibrium point $\pi^{\ast}$ of $F$}
+
+\end{algorithm}
+
+
+When initial conditions are neither prefix nor suffix points, trajectories can enter periodic orbits. We say the period of a cycle is $T>0$ if there exist $k_0 \geq 0$ such that $\boldsymbol{\pi}(k+T) = \boldsymbol{\pi}(k)$ for all $k \geq k_0$. We first provide a simple example to demonstrate that periodic orbits exist.
+
+\begin{example}[Period-2 Oribt]
+    Suppose $N = 4$ agents are connected by the following links $\edges = \{(1,2),(2,3),(3,4),(1,4)\}$. Suppose all agents share, aggregate, and update their preferences according to $\psi(\pi_j,\pi_i) = \pi_j$, $\Aggregate\left( \cdot \right) = \bigmeet_{j \in \N_i^k} \pi_j$, and $\varphi(\pi_i, \pi) = \pi$. Finally, suppose $\boldsymbol{\pi}(0)$ is an initial condition such that $\pi_1(0) \meet \pi_3(0) \neq \pi_2(0) \meet \pi_4(0)$, i.e.~if Agent 1 and Agent 2 share preferences, they cannot be shared by Agent 3, etc. Then, then there is period-$2$ orbit:
+    \begin{align*}
+        \boldsymbol{\pi}(0) &=& \left( \pi_1,\pi_2,\pi_3,\pi_4 \right), \\
+        \boldsymbol{\pi}(1) &=& \left( \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3 \right), \\
+        \boldsymbol{\pi}(2) &=& \left( \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4 \right), \\
+        \boldsymbol{\pi}(3) &=& \left( \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3 \right), \\
+        \boldsymbol{\pi}(4) &=& \left( \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4 \right), \quad \text{etc.}
+    \end{align*}
+    A similar argument applies to any ring topology with $N$ even, or with the join operation instead of the meet.
+
+\end{example}
 
 
 
