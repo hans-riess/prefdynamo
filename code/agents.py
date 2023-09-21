@@ -1,21 +1,20 @@
-from networkx import DiGraph,Graph,set_node_attributes,transitive_closure,compose
+from networkx import DiGraph,Graph,set_node_attributes,get_node_attributes,transitive_closure,compose
 from digraphs import reflexive_closure,intersection,clean_digraph,tau_distance
 from functools import reduce
 from itertools import combinations
-from networkx import draw_networkx_nodes,draw_networkx_edges,draw_networkx_labels,circular_layout
+from networkx import draw_networkx_nodes,draw_networkx_edges,draw_networkx_labels,draw_networkx_edge_labels,circular_layout
 import matplotlib.pyplot as plt
 import copy
 
 class Preference(DiGraph):
-    def __init__(self, digraph, **kwargs):
+    def __init__(self, digraph,**kwargs):
         if not isinstance(digraph, DiGraph):
             raise ValueError("Input should be an instance of the 'DiGraph' class.")
-        super().__init__(digraph, **kwargs)
+        # super().__init__(digraph,utility=None, **kwargs)
         self.digraph = digraph
-        self.pos = circular_layout(digraph)
         
     def join(self,other):
-        #least upper bound of two preference relation under information order
+        #least upper bound of two preference relations under information order
         if not isinstance(other, Preference):
             raise ValueError("Input should be an instance of the 'Preference' class.")
         return Preference(clean_digraph(transitive_closure(compose(self.digraph, other.digraph))).copy())
@@ -30,20 +29,22 @@ class Preference(DiGraph):
         return Preference(clean_digraph(self.digraph).copy())
     
     def plot(self,edge_color='blue',**kwargs):
-        draw_networkx_nodes(self.digraph,self.pos,node_color='black',node_size=5)
-        draw_networkx_edges(self.digraph,self.pos,edge_color=edge_color,width=1, alpha=0.5)
+        pos = circular_layout(self.digraph)
+        draw_networkx_nodes(self.digraph,pos,node_color='black',node_size=5)
+        draw_networkx_edges(self.digraph,pos,edge_color=edge_color,width=1, alpha=0.5)
         
 
 class Agent(Preference):
-    def __init__(self,preference,r_median,update_rule,**kwargs):
+    def __init__(self,preference,r_median,update_rule):
         if not isinstance(preference, Preference):
             raise ValueError("Input should be an instance of the 'Preference' class.")
-        if update_rule not in {'prior','posterior','meet','join'}:
+        self.update_rules = ['prior','posterior','meet','join']
+        if update_rule not in self.update_rules:
             raise ValueError("Input should be 'prior','posterior','meet', or 'join'")
         self.r_median = r_median #the type of aggregation 1<=r<=len(agent_list)
-        self.update_rule = update_rule #keeps prior pref, uses posterior (aggregated), or join/meet of both
-        super().__init__(preference.digraph,**kwargs)
+        self.update_rule = update_rule
         self.preference = preference
+        self.update_rule = update_rule
         
     def aggregate(self,agent_list):
         #if r==len(agent_list), then a join-projection
