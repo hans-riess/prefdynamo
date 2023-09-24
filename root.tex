@@ -83,7 +83,7 @@
 \thanks{Hans Riess is with the Department of Electrical \& Computer Engineering, Duke University. Email: {\tt hans.riess@duke.edu} (corresponding author).}%
 % \thanks{Gregory Henselman-Petrusek is with the Pacific Northwest National Labratory.}%
 \thanks{Michael Munger is with the Department of Economics and the Deparment of Political Science, Duke University.}%
-\thanks{Robert Ghrist is with the Department of Electrical \& Systems Engineering, Duke University.}%
+\thanks{Robert Ghrist is with the Department of Electrical \& Systems Engineering, University of Pennsylvania.}%
 \thanks{Michael Zavlanos is with the Department of Mechanical Engineering \& Material Science, Duke University.}%
 }
 \maketitle
@@ -193,11 +193,13 @@ While it is known as a folk-theorem that the set of transitive-reflexive relatio
 
 A \emph{preorder} is a set $\P$ with a relation $\precsim$ satisfying the axioms of transitivity and reflexivity. Preferences, we assume, are preorders, and we will use both terms interchangeably. A \emph{partial order} is a a preorder, with an order usually written $\preceq$ satisfying a third axiom, called anti-symmetry: if $\pi_1 \preceq \pi_2$ and $\pi_2 \preceq \pi_1$, then $\pi_1 = \pi_2$. Note do not assume preferences satisfy the third axiom because we want to model indifference between alternatives. Hence, we write $\pi_1 \prec \pi_2$ whenever $\pi_1 \preceq \pi_2$, but $\pi_2 \not \preceq \pi_1$.
 
-A map between (partial-, pre-) ordered sets $f: \P \to \P'$ is \emph{monotone} if $\pi_1 \preceq \pi_2$ implies $f(\pi_1) \preceq f(\pi_2)$. Cartesian products of ordered sets $\P_1 \times \P_2 \times \cdots \times \P_N$ yield an ordered set under the \emph{product order}: $(\pi_1, \pi_2, \dots, \pi_N) \preceq (\pi_1', \pi_2', \dots, \pi_N')$ if and only if $\pi_i \preceq \pi'_i$ for all $i = 1,2,\dots, N$.
+A map $f: \P \to \P$ between partial orders is \emph{monotone} if $\pi_1 \preceq \pi_2$ implies $f(\pi_1) \preceq f(\pi_2)$, \emph{inflationary} if $f(\pi) \succeq \pi$ for all $\pi \in \P$, and \emph{deflationary} if $f(\pi) \preceq \pi$ for all $\pi \in \P$. Note, inflationary or deflationary functions are not necessarily monotone. Let $\Fix(f) = \{ \pi \in \L: f(\pi) = \pi \}$ denote the set of fixed points, $\Pre(f) = \{ \pi \in \L : f(\pi) \preceq \pi\}$ the set of \emph{prefix points}, and $\Post(f) =\{ \pi \in \L : f(\pi) \succeq \pi\}$ the set of \emph{suffix points}. If they exist, let $\lfp(f)$ and $\gfp(f)$ denote the least and greatest fixed points, respectively.
 
-\begin{lemma} \label{lem:compose-produt}
-    Suppose $f_1: \P_1 \to \P_3$ and $f_2: \P_2 \to \P_4$ are monotone.  Then, $f: \P_1 \times \P_2 \to \P_3 \times \P_4$, defined $f(\pi_1,\pi_2) = (f_1(\pi_1),f_2(\pi_2))$ is monotone in the product order. If $\P_2 = \P_3$, then, the composition $f_2 \circ f_1: \P_1 \to \P_3$ is monotone.
-\end{lemma}
+Cartesian products of ordered sets $\P_1 \times \P_2 \times \cdots \times \P_N$ yield an ordered set under the \emph{product order}: $(\pi_1, \pi_2, \dots, \pi_N) \preceq (\pi_1', \pi_2', \dots, \pi_N')$ if and only if $\pi_i \preceq \pi'_i$ for all $i = 1,2,\dots, N$. 
+
+% \begin{lemma} \label{lem:compose-produt}
+%     Suppose $f_1: \P_1 \to \P_3$ and $f_2: \P_2 \to \P_4$ are monotone.  Then, $f: \P_1 \times \P_2 \to \P_3 \times \P_4$, defined $f(\pi_1,\pi_2) = (f_1(\pi_1),f_2(\pi_2))$ is monotone in the product order. If $\P_2 = \P_3$, then, the composition $f_2 \circ f_1: \P_1 \to \P_3$ is monotone.
+% \end{lemma}
 
 Ordered sets on their own have no algebraic structure. Lattices are partial orders with a rich algebraic structure given by two merging operations called ``meet'' and ``join.''
  
@@ -227,12 +229,9 @@ We recall a set of properties that characterize lattices as ordered algebraic st
 
 Given variables $\pi_1,\pi_2,\dots,\pi_n$, a \emph{lattice polynomial} is a term in the language $\pi_1,\pi_2,\dots,\pi_n~\vert~\pi \meet \pi'~\vert~\pi \join \pi'$, i.e.~an expression formed these symbols and parentheses. Suppose $\L$ is  lattice. Then, a lattice polynomial $p$ defines a function $p: \L^n \to \L$ by substituting an element of $\L$ into each variable of $p$.
 
-\begin{lemma}\label{lem:lattice-poly}
-    Suppose $p$ is a lattice polynomial. Then, $p$ is monotone.
-\end{lemma}
-
-% Sometimes, lattices can be generated from a set of basic elements. For $\pi_1, \pi_2 \in \L$, we say $\pi_2$ \emph{covers} $\pi_1$, written $\pi_1 \lessdot \pi_2$, if $\pi_1 \preceq \pi_2$ and there is no element $\sigma$ such that $\pi_1 \prec \sigma \prec \pi_2$. An element of a lattice is an \emph{atom} if it covers exactly one element, the bottom element. We let $\Atoms(\L)$ denote the set of atoms in a lattice. A lattice is \emph{atomistic} is every element can be written as a join of atoms, i.e.~$\Atoms(\L)$ generates.
-
+% \begin{lemma}\label{lem:lattice-poly}
+%     Suppose $p$ is a lattice polynomial. Then, $p$ is monotone.
+% \end{lemma}
 
 \subsection{The Information Order}
 
@@ -309,11 +308,7 @@ for the local preference updates $\pi_i(k+1) = F_i\left( \profile(k) \right)$.
 
 \subsection{Examples}
 
-For the remainder of this section, we discuss candidates for the functions $\psi, \Aggregate(\cdot)$, and $\varphi$, noting how various personalities of agents affect the choice of functions. In particular, we address functions that utilize the lattice structure of the information order:
-
-\begin{definition}
-    Suppose $i \in \N$. Then, we say an $F_i$ of the form \eqref{eq:message-passing} is \emph{polynomial} if the functions $\psi$, $\Aggregate(\cdot)$ and $\varphi$ are lattice polynomials.
-\end{definition}
+For the remainder of this section, we discuss candidates for the functions $\psi, \Aggregate(\cdot)$, and $\varphi$, noting how various personalities of agents affect the choice of functions. In particular, we address functions that utilize the lattice structure of the information order.
 
 \begin{algorithm}[t]
 \caption{$\mathsf{UpdatePreference}$} \label{alg:messsage-passing}
@@ -374,7 +369,7 @@ Anonymity implies the order messages are received or the identity of the sender 
     and a federation of neighbors into coalitions \[\{ J_m : |J_m| \geq r \}_{m=1}^{\ell} \subseteq \N_i\] such that $(c_{m-1} \prefers_{j} c_{m}) \in \pi_j$ for all  $j \in J_m$.
 \end{proposition}
 
-Thus, $a \prefers b$ in in the aggregate if and only if there is a coalition of $r$ agents formed among the neighbor set, $\N_i$. Hence, the choice of $r$ is a threshold for constituting a ``majority'' rule \cite{buchanan1965calculus}. If $r$ is small, only a few agents need to come to a consensus on a particular comparison. Similarly, an agent with large $r$, requires a larger coalition of agents to reach consensus. Hence, the value of $r$ for a particular agent is a measure of stubbornness. The extremal cases illustrate this fact: if $r= n$, then the median is the join projection $\bigjoin_{m=1}^n \pi_{i_m}$. On the other hand, if $r=1$, the median is the meet projection $\bigmeet_{m=1}^n \pi_{i_m}$. Finally, the degenerate cases suggest the impossibility of forming any coalition at all ($r=0$) or a coalition large enough to reach a consensus ($r > |\N_i|$) leads to the fully-indecisive preference $\Median_r(\pi_{\N_j}) = \iota$ and the fully-indifferent preference $\Median_r(\pi_{\N_j}) = \epsilon$, respectively.
+Thus, $a \prefers b$ in in the aggregate if and only if there is a coalition of $r$ agents formed among the neighbor set, $\N_i$. Hence, the choice of $r$ is a threshold for constituting a ``majority'' rule \cite{buchanan1965calculus}. If $r$ is small, only a few agents need to come to a consensus on a particular comparison. Similarly, an agent with large $r$, requires a larger coalition of agents to reach consensus. Hence, the value of $r$ for a particular agent is a measure of stubbornness. The extremal cases illustrate this fact: if $r= n$, then the median is the join projection $\bigjoin_{m=1}^n \pi_{j_m}$. On the other hand, if $r=1$, the median is the meet projection $\bigmeet_{m=1}^n \pi_{j_m}$. Finally, the degenerate cases suggest the impossibility of forming any coalition at all ($r=0$) or a coalition large enough to reach a consensus ($r > |\N_i|$) leads to the fully-indecisive preference $\Median_r(\pi_{\N_j}) = \iota$ and the fully-indifferent preference $\Median_r(\pi_{\N_j}) = \epsilon$, respectively.
 
 \paragraph*{Updates}
 We examine four update functions which, along with the a choice of $\psi$ and $\Aggregate(\cdot)$, characterize the personality of an agent. Suppose $\pi = \Aggregate\left[\psi(\pi_j,\pi_i)\right]_{j \in \N_i}$ is the result of aggregating neighbors' revealed preferences. On one hand, an agent who is single-minded will not take into account the preferences of neighbors, i.e.~$\varphi(\pi_i,\pi) = \pi_i$. On the other hand, an agent who is highly-empathetic might ignore their prior preferences, i.e.~$\varphi(\pi_i,\pi) = \pi$. The choice of meet or join for $\varphi$ has interesting implications as well. Suppose an agent is examining the validity of a previously-held comparison $a \prefers b$. It that comparison is in $\pi$, then the meet, i.e.~$\varphi(\pi_i,\pi) = \pi_i \meet \pi$, resembles a confirmation bias: if $a \prefers b$ is in the aggregate preference, the comparison is kept, otherwise discarded. On the other hand, if the goal of an agent is to learn by observing other agents' preferences, the join, i.e.~$\varphi(\pi_i,\pi) = \pi_i \join \pi$, models the process of integrating a prior-held preference with new observations.
@@ -383,72 +378,76 @@ We examine four update functions which, along with the a choice of $\psi$ and $\
 \section{Stable Preference Profiles}
 \label{sec:stable}
 
-% In our discussion of mechanisms of sharing, aggregating and updating preferences, we considered maps $\psi$, $\Aggregate(\cdot)$, and $\varphi$ that are monotone. In fact, except for a possibly non-trivial message-generating map $\psi$, by Lemma \ref{lem:polynomial}, message and update functions that are either meets, joins, or projections, as well as aggregation functions that are lattice polynomials, are monotone. Hence, by Lemma \ref{lem:compose-produt}, the maps $F_i: \Pref(\A)^N \to \Pref(\A)$ and the map $F = (F_1,F_2,\dots,F_N)$ are monotone, as well as iterations of $F$, i.e.~in $\profile(k) = F^k \bigl( \profile(0) \bigr)$. This observation is summarized by the following assumption.
-
-\begin{assumption}[Monotonicity] \label{ass:monotone}
-    The iterated map $F$ of the global preference dynamics \eqref{eq:pi-global} is monotone with respect to the product information order on $\Pref(A)^N$.
-\end{assumption}
-
-In this section, leveraging Assumption \ref{ass:monotone}, we study the equilibrium points, the time-invariant solutions of \eqref{eq:pi-global}, propose an algorithm to compute them, and discuss cycles emerging in the dynamics. First, we recall a few definitions and a theorem about the fixed points of monotone maps. 
+Stable preference profiles consist of preferences that are fixed by result of applying of each agent's message, aggregation, and update functions. In this section, we study the structure of stable preferences as well as provide sufficient conditions for when an initial preference profile will converge to a stable preference profile.
 
 \subsection{Equilibrium Points}
 
-Suppose $F: \P \to \P$ is a monotone map on a partial-order $\P$. Let $\Fix(F) = \{ \pi \in \L: F(\pi) = \pi \}$ denote the set of fixed points, $\Pre(F) = \{ \pi \in \L : F(\pi) \preceq \pi\}$ the set of \emph{prefix points}, and $\Post(F) =\{ \pi \in \L : F(\pi) \succeq \pi\}$ the set of \emph{suffix points}. If they exist, let $\lfp(F)$ and $\gfp(F)$ denote the least and greatest fixed points, respectively. A partial order is a \emph{complete lattice} if arbitrary subsets have least upper bounds; e.g.~a finite lattice is complete. A complete lattice has, at a bare minimum, a least element (join of the empty-set) and a greatest element (meet of the empty-set). We recall a theorem guaranteeing existence of fixed points.
+Suppose $F = (F_1,F_2,\dots,F_N)$ is given. i.e.~$F: \Pref(\A)^N \to \Pref(\A)^N$ is an arbitrary iterative map sending preference profiles to preference profiles. The \emph{equilibrium points} of the resulting global preference dynamical system
+\begin{align}
+    \begin{aligned}
+        \profile(k+1) &=& F\left( \profile(k) \right) \\
+        \profile(0) &=& \profile_0
+    \end{aligned} \label{eq:global-pi}
+\end{align}
+system are collected in the following set
+\begin{align*}
+    \S = \{\profile \in \Pref(\A)^N : \exists k_0 \geq 0, \profile(k) = \profile~\forall k \geq k_0\}.
+\end{align*}
+In order to utilize the algebraic structure of preference profiles to study the equilibrium point of the system, we impose some constraints on $F$. 
 
-\begin{lemma}[Tarski Fixed Point Theorem \cite{tarski}] \label{lem:tfpt}
-    Suppose $\P$ is a complete (e.g.~finite) lattice and $F: \P \to \P$ is monotone. Then, $\Fix(F) \subseteq \P$ is a complete lattice.
+Suppose $F$ is monotone. Then, $\profile \preceq \profile'$ (i.e. $\pi_i \preceq \pi_i'$ for ever $i \in N$) implies $F_i(\profile) \preceq F_i(\profile')$. Hence, if every agent reveals more preferences, then the result of message-passing, aggregating and updating preference can only reveal more preferences. The message-passing framework of Section \ref{sec:dynamics} produces a monotone $F_i$ if the message-passing, aggregate, and update functions are monotone, in particular, if these functions are lattice polynomials.
+
+\begin{lemma} \label{lem:message-passing}
+    Suppose, in \eqref{eq:message-passing}, the maps $\psi$, $\Aggregate(\cdot)$ and $\varphi$ are lattice polynomials for every $i \in \N$. Then, $F$ is monotone.
 \end{lemma}
 
-The Tarski Fixed Point Theorem directly implies the following result which characterizes the equilibrium points of our preference dynamics model.
+% Recall, a complete lattice is a lattice $\L$ such that arbitrary meets $\bigjoin U$ and $\bigmeet U$ exist for every $U \subseteq \L$. 
 
-\begin{theorem}
-    Suppose $\profile(k+1) = F \bigl( \profile(k) \bigr)$ with initial condition $\profile(0) \in \Pref(\A)^N$ is a dynamical system on preference profiles satisfying Assumption \ref{ass:monotone}. Then, the solutions $\S$, i.e.~equilibrium points, form a complete lattice.
+We recall a theorem equipping fixed points with a lattice structure.
+\begin{lemma}[Tarski Fixed Point Theorem \cite{tarski}] \label{lem:tfpt}
+    Suppose $\L$ is a complete lattice and $F: \L \to \L$ is monotone. Then, $\Fix(F)$ is a lattice.
+\end{lemma}
+
+The Tarski Fixed Point Theorem directly implies the following result which characterizes the equilibrium points of the global dynamics
+\begin{theorem} \label{thm:dynamics}
+    Suppose $F$ is monotone. Then, $\S$ forms a complete lattice.
 \end{theorem}
+
+Together with Lemma \ref{lem:message-passing}, Theorem \ref{thm:dynamics} implies that there exist stable preference profiles of the model we proposed in Section \ref{sec:dynamics}. In particular, there exist a maximum and minimum stable preference profile.
+
 \begin{corollary}
-    The solution set $\S$ is nonempty and has a least and greatest element, $\bigmeet \S$ and $\bigjoin \S$, respectively.
+    $\lfp(F)$ and $\gfp(F)$ are the minimum and maxiumum stable preference profiles with respect to the product information order.
 \end{corollary}
 
-Thus, equilibrium points of preference dynamics exist, although are not, in general, unique. However, by virtue of the fixed points forming a lattice, there exist unique greatest and least least equilibrium points with respect to the product information order. The greatest (resp.~least) equilibrium point is the stable preference profile with the most (resp.~least) alternatives compared. More generally, the meet and join of stable preference profiles exist: if $\profile, \profile'$ are stable preference profiles, there is a largest \emph{stable} preference profile $\profile \meet_{\S} \profile'$ contained by both $\profile$ and $\profile'$. There also exist a smallest \emph{stable} preference profile $\profile \join_{\S} \profile'$ containing both $\profile$ and $\profile'$. As a point of warning, the operations $\meet_\S$ and $\join_S$ do not necessarily coincide with $\meet$ and $\join$ in the product lattice $\Pref(\A)^N$.
-
+Thus, equilibrium points of preference dynamics exist, although are not, in general, unique. However, by virtue of the fixed points forming a lattice, there exist unique greatest and least least equilibrium points with respect to the product information order. The greatest (resp.~least) equilibrium point is the stable preference profile with the most (resp.~least) alternatives compared. More generally, the meet and join of stable preference profiles exist: if $\profile, \profile'$ are stable preference profiles, there is a largest \emph{stable} preference profile $\profile \meet_{\S} \profile'$ contained by both $\profile$ and $\profile'$. There also exist a smallest \emph{stable} preference profile $\profile \join_{\S} \profile'$ containing both $\profile$ and $\profile'$. As a point of warning, the operations $\meet_\S$ and $\join_S$ do not necessarily coincide with $\meet$ and $\join$ in $\Pref(\A)^N$, given by the lattice operations on the product order.
 
 
 \subsection{Computing Equilibrium Points}
 
-
-
-The Tarski Fixed Point Theorem (Lemma \ref{lem:tfpt}) is well-known to be non-constructive; the proof does not provide an algorithm to compute fixed points, it only guarantees their existence. However, for some initial conditions, we show that all trajectories eventually converge to an equilibrium point.
-
-% We will need a definition. Suppose $\P$ is a partial order. Recall, for $\pi_1,\pi_2 \in \P$, an \emph{interval} is a subset defined $[\pi_1,\pi_2] = \{ \pi' : \pi_1 \preceq \pi' \preceq \pi_2 \}$. A chain $\gamma$ in $\P$ is a sequence $\pi_0 \preceq \pi_1 \preceq \cdots \preceq \pi_{\ell}$. The length of $\gamma$, written $|\gamma|$, is the $\ell$.
-
-% \begin{definition}
-%     Suppose $\P$ is a partial order with bottom element $\bot$. A \emph{height function} on a lattice $\L$ is a map $h: \L \to \mathbb{N}$ defined $h(x) =  \max\{ |\gamma|:\gamma~\text{is a chain in}~[\bot,\pi] \}.$
-% \end{definition}
-
-% It follows that the height function is monotone with respect to the order $(\mathbb{N},\leq)$ and $h(\bot) = 0$.
-
+Theorem \ref{thm:dynamics} not provide an algorithm to compute stable preference profiles, it only guarantees their existence. We examine initial preference profiles for which trajectories of \eqref{eq:global-pi} converge to stable preference profiles. In our analysis, we require that the number of alternatives in $\A$ is finite.x
 
 \begin{theorem} \label{thm:initial-conditions}
-    Suppose $\profile(0) \in \Pre(F) \cup \Post(F)$. Then, $\profile(k)$ converges to a fixed point in a finite number of iterations.
+    Suppose $\A$ is finite, $F$ is monotone, and $\profile(0) \in \Pre(F) \cup \Post(F)$. Then, $\profile(k)$ converges to an equilibrium point in a finite number of iterations for every initial profile $\profile(0) \in \Pref(\A)^N$.
 \end{theorem}
 \begin{proof}
-    We show the first case. (The second follows by order duality.) Suppose $\profile(0) \in \Pre(F)$. Then, by monotonicity of $F$, $\profile(0) \preceq F\left(\profile(0) \right)$. Continuing to apply monotonicity implies
+    We show the first case. (The second follows by order duality.) Suppose $\profile(0) \in \Pre(F)$, that is, $\profile(0) \preceq F\left(\profile(0) \right)$. Then, by monotonicity $F(\profile(0)) \preceq F\left( F(\profile(0))\right)$. Continuing in this way implies
     \begin{align}
         F^{k+1}\left( \profile(0)\right)  = \profile(k+1) \preceq \profile(k) \preceq \cdots \preceq \profile(0) \label{eq:chain}
     \end{align} For each $k$, either $\profile(k+1) \prec \profile(k)$, or $\profile(k+1) = \profile(k)$, in which case $\profile(k) \in \Fix(F)$. Because the set of alternatives $\A$ is finite, $\Pref(\A)$ is finite, which implies every chain is finite. Thus, the chain \eqref{eq:chain} either converges to the trivial preference $\epsilon$, which, then, is necessarily a fixed point, or otherwise converges to another fixed point, the preference at which the decreasing chain terminates.
-    % Hence, by monotonicity of the height function, $\{h\bigl(\profile(k) \bigr) \}_{k=0}^{\infty}$ is a monotonically non-increasing function bounded below by $h(\epsilon) = 0$.
 \end{proof}
 
-The following corollary specifies how to compute the greatest and least equilibrium points.
+This rather-stringent condition on the initial profile $\profile(0)$ specifies either $F_i(\profile(0)) \preceq \pi_i(0)$ for all $i \in \N$ or $F_i(\profile(0)) \succeq \pi_i(0)$ for all $i \in \N$. The minimum and maximum preference profile are guaranteed to satisfy the condition. Moreover, trajectories with these initial conditions converge to the minimum and maximum stable preference profiles.
 
 \begin{corollary}
-    The initial conditions $\profile(0) = (\epsilon,\epsilon,\dots,\epsilon)$ and $\profile(0) = (\iota,\iota, \cdots, \iota)$ converges to $\lfp(F)$ and $\gfp(F)$, respectively.
+    Suppose $\profile(0) = \boldsymbol{\epsilon}$, or $\boldsymbol{\iota}$. Then, $\profile(k)$ converges to $\lfp(F)$ and $\gfp(F)$, respectively.
 \end{corollary}
 
-If the update function is non-increasing in $\pi_i$, e.g.~$\varphi(\pi_i,\pi) = \pi_i \meet \pi$, or non-decreasing in $\pi_i$, eg.~ $\varphi(\pi_i,\pi) = \pi_i \join \pi$, then we are also guaranteed to converge to a fixed point.
+On the other hand, if $F$ is deflationary or inflationary (not necessarily monotone), then applying the result of message-passing, aggregating, and updating a preference will only reveal more comparisons and prune the set of comparisons, respectively. For instance, the choice of the update function $\varphi(\pi,\pi_{\text{agg}}) = \pi \meet \pi_{\text{agg}}$ for every $i \in \N$ will result in a deflationary $F$, while the choice of the update function 
+$\varphi(\pi,\pi_{\text{agg}}) = \pi \join \pi_{\text{agg}}$ will result in an inflationary $F$. Either of these properties is sufficient for arbitrary trajectories to converge to fixed points.
 
-\begin{corollary}
-    If, in the model \eqref{eq:message-passing}, the update function is either non-increasing for every $\pi_i$, i.e.~$\varphi(\pi_i,\cdot) \preceq \pi_i$, or non-decreasing for every $\pi_i$, i.e.~$\varphi(\pi_i,\cdot) \succeq \pi_i$, then every initial $\profile(0)$ converges to a fixed point.
-\end{corollary}
+\begin{proposition}
+     Suppose $\A$ is a finite, and suppose $F$ is deflationary or inflationary. Then, $\profile(k)$ converges to a equilibrium point in a finite number of iterations.
+\end{proposition}
 
 \subsection{Periodic Orbits}
 We say an orbit is periodic if there is $T>0$ and a $k_0 \geq 0$ such that $\profile(k+T) = \profile(k)$ for all $k \geq k_0$. We show, by example, that when $\profile(0) \notin \Pre(F) \cup \Post(F)$, trajectories can enter periodic orbits.
@@ -463,7 +462,7 @@ We say an orbit is periodic if there is $T>0$ and a $k_0 \geq 0$ such that $\pro
         \profile(k) &=& \left( \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3 \right), \\
         \profile(k+1) &=& \left( \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4 \right).
     \end{align*}
-    If $\pi_1 \meet \pi_3 \neq \pi_2 \meet \pi_4$, then the orbit is a period-$2$ cycle. We leave the reader to show that $\pi_1 \meet \pi_3 = \pi_2 \meet \pi_4$ if and only if $\profile(0) = \Pre(F) \cup \Post(F)$. Hence, it the latter case, $\profile(k)$ converges to a fixed point. A similar argument applies to any ring topology with an even number of agents, or with the join operation instead of the meet.
+    If $\pi_1 \meet \pi_3 \neq \pi_2 \meet \pi_4$, then the orbit is a period-$2$ cycle. We leave the reader to show that $\pi_1 \meet \pi_3 = \pi_2 \meet \pi_4$ implies $\profile(0) \in \Pre(F) \cup \Post(F)$. Hence, it the latter case, $\profile(k)$ converges to a fixed point. A similar argument applies to any ring topology with an even number of agents, or with the join operation instead of the meet.
 \end{example}
 
 
@@ -480,7 +479,7 @@ We say an orbit is periodic if there is $T>0$ and a $k_0 \geq 0$ such that $\pro
 Theorem \ref{thm:initial-conditions} implies that you can compute fixed points by, first, querying initial conditions until $\boldsymbol{\pi(0)} \in \Pre(F) \cup \Post(F)$, then, computing trajectories until they converge. It is not clear if you would achieve better complexity than exhaustive search of $\Pref(\A)^N$ by this method. Is it possible to find an aribitrary fixed point in some other way? Suppose $\P = \{1,2,\dots,n\}$ with the standard order. For the product lattice $\P^d$, there is an inductive algorithm on $d$ for computing fixed points of a monotone function $f: \P^d \to \P^d$ running in $O(\log^d n)$ time \cite{?}. The base-case, finding a fixed point of $f: \P \to \P$, is equivalent to binary search: Initialize $m = \lceil n/2 \rceil$. If $f(m) < m$, restrict $f$ to $f: \{1,2,\dots,m-1\} \to \{1,2,\dots,m-1\}$. If $f(m) > m$, restrict $f$ to $f: \{m+1,m+2,\dots,n\} \to \{m+1,m+2,\dots,n\}$. Otherwise, $f(m) = m$ and you are done. An analogous inductive algorithm is not possible, in our case, because, in the base case $f: \Pref(\A) \to \Pref(\A)$, the binary search method would require the information order on $\Pref(\A)$ to be a chain, i.e.~totally ordered. To the best of our knowledge, there are no algorithms for computing fixed points of finite lattices, in general, besides exhaustive search.
 
 \paragraph*{Metapreferences}
-Suppose we are able to call to an oracle that produces an arbitrary fixed point, i.e.~a stable preference profile. Is this preference profile desirable? In future work, we want to prune the set of preferences in such a away that stable preferences are acceptable to human supervisors. Critical in this line of reasoning is the notion of a \emph{metapreference},  or higher-order preference, a notion of a preference over preferences. Formally, an arbitrary ordering on a set of preferences \cite{lutskanov2015}, a narrower class of metapreferences can be represented by utility functions on a set of preference relations, which can be interpreted as measuring how costly or beneficial a preference is to the system.\footnote{In an anecdote due to Michael Munger \cite{munger2019}, imagine there was a store selling preferences. A rational agent would have to be able to afford her preferences, e.g.~potato chips are preferred to  caviar. This parallels our observation that metapreferences can constrain the agents' preferences to those acceptable to a human supervisor.} Utility functions representing a given metapreferene relation are not unique, i.e.~utility functions capture more than the relative order of preferences. The values of metapreference utilities reflect the degree to which adding additional relations $a \prefers b$ will increase or decrease utility. If every agent has a utility function specifying the cost or benefit of holding every possible preference, maximizing
+Suppose we are able to call to an oracle that produces an arbitrary fixed point, i.e.~a stable preference profile. Is this preference profile desirable? In future work, we want to prune the set of preferences in such a away that stable preferences are acceptable to human supervisors. Critical in this line of reasoning is the notion of a \emph{metapreference},  or higher-order preference, a notion of a preference over preferences. Formally, an arbitrary ordering on a set of preferences \cite{lutskanov2015}, a narrower class of metapreferences can be represented by utility functions on a set of preference relations, which can be interpreted as measuring the cost or benefit of a preference to the agent as well as the supervisor \cite{munger2019}. Utility functions representing a given metapreferene relation are not unique, i.e.~utility functions capture more than the relative order of preferences. The values of metapreference utilities reflect the degree to which adding additional relations $a \prefers b$ will increase or decrease utility. If every agent has a utility function specifying the cost or benefit of holding every possible preference, maximizing
 \begin{align}
     \max_{\profile = (\pi_1,\pi_2,\dots,\pi_N)} \sum_{i=1}^N v_i(\pi_i), \label{eq:dist-opt}
 \end{align}
