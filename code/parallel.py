@@ -12,5 +12,5 @@ def update_preference_profile(network):
     if __name__ == '__main__':
         with ProcessPoolExecutor() as executor:
                 results = list(executor.map(network.update_preference,nodes))
-    agent_dict = dict(results)
-    return SocialNetwork(network.graph,agent_dict)
+    new_agent_dict = dict(zip(nodes,results))
+    network.agent_dict = new_agent_dict

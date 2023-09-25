@@ -65,15 +65,3 @@ def clean_digraph(digraph):
             edges_to_remove.append(edge)
     digraph.remove_edges_from(edges_to_remove)
     return digraph
-    
-def tau_distance(digraph_1,digraph_2):
-    if len(digraph_1) != len(digraph_2):
-        raise ValueError("'digraph_1' and 'digraph_2' should have same number of nodes.")
-    n_nodes = len(digraph_1)
-    digraph_2.reverse()
-    dist = 0
-    for i in range(n_nodes):
-        for j in range(n_nodes):
-            if (i,j) in digraph_1.edges and (j,i) in digraph_2.edges:
-                dist+=1
-    return dist
