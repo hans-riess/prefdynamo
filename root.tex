@@ -26,7 +26,7 @@
 \newcommand{\X}{\mathcal{X}}
 \newcommand{\I}{\mathcal{I}}
 \renewcommand{\P}{\mathcal{P}}
-\renewcommand{\S}{\mathcal{S}}
+\renewcommand{\SS}{\mathcal{S}}
 \newcommand{\G}{\mathcal{G}}
 \newcommand{\E}{\mathcal{E}}
 \newcommand{\Pref}{\mathsf{Pre}}
@@ -128,7 +128,7 @@ For purposes of illustration, we consider three examples of agents, alternatives
     Suppose consumers and producers have various levels of supply and demand for goods $\{1,2,\dots,d\}$. The alternative set consists of  bundles-of-goods, positive quantities of each alternative, constrained by the divisibility or availabilities of each alternative, $\A \subseteq \R^{d}_{+}$. Preferences consist of comparisons between bundles of goods; it is often assumed that preferences are monotone, i.e.~more of a good is always preferred to less. The graph is a bipartite graph whose edges consist of pairs of consumers and producers who engage in trade.
 \end{example}
 \begin{example}[Multi-Agent RL]
-    Suppose agents take actions from a set $\Act$ via a local policy $\mu_i: \prod_{i \in \N} \S_i \to \Act$ where $\S_i$ is the set of states of Agent $i$. The alternatives $\A$ are the set of policies. An agent forms preferences over policies, for instance, by maximizing the cumulative discounted reward $\sum_{t=0}^{\infty} \gamma^t r_{i,t}(\mathbf{s},a)$. The graph consists of pairs of agents whose policy functions are coupled.
+    Suppose agents take actions from a set $\Act$ via a local policy $\mu_i: \prod_{i \in \N} \SS_i \to \Act$ where $\SS_i$ is the set of states of Agent $i$. The alternatives $\A$ are the set of policies. An agent forms preferences over policies, for instance, by maximizing the cumulative discounted reward $\sum_{t=0}^{\infty} \gamma^t r_{i,t}(\mathbf{s},a)$. The graph consists of pairs of agents whose policy functions are coupled.
 \end{example}
 \begin{example}[Teams of Robots]
     Suppose a team of autonomous robots are collaboratively performing tasks. Agents form preferences over tasks---the alternatives---based on the skills required to complete the task, the number of agents needed to help with the task, as well as the time it will take to complete the task. The graph consists of an \emph{ad hoc} wireless communication network which agents utilize to coordinate tasks.
@@ -164,30 +164,28 @@ The first problem we address in this paper is modeling preference dynamics over 
 
 The second problem we address is a computational one. Suppose preferences evolve according to \eqref{eq:pi-dynamics} and the iterative maps $F_i$ are known.
 
-
-
-\begin{table}
-\centering
-\caption{}
-\label{table:notation}
-\begin{tabular}{p{5cm}c}
-\toprule
-Concept & Notation \\
-\midrule
-Agent, & $i \in \N$ \\
-Alternative, & $a \in \A$ \\
-Preference, & $a \prefers_i b$ \\
-Preference profile, & $\profile = \left(\pi_1,\pi_2,\dots,\pi_N\right)$ \\
-Metapreference, & $\pi \metaprefers \pi'$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+% \begin{table}
+% \centering
+% \caption{}
+% \label{table:notation}
+% \begin{tabular}{p{5cm}c}
+% \toprule
+% Concept & Notation \\
+% \midrule
+% Agent, & $i \in \N$ \\
+% Alternative, & $a \in \A$ \\
+% Preference, & $a \prefers_i b$ \\
+% Preference profile, & $\profile = \left(\pi_1,\pi_2,\dots,\pi_N\right)$ \\
+% Metapreference, & $\pi \metaprefers \pi'$ \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
 
 \section{Preference Lattices}
 \label{sec:lattices}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-While it is known as a folk-theorem that the set of transitive-reflexive relations with inclusion has the structure of an ordered lattice \cite{birkhoff1940}, we exact this observation and interpret the meaning of the lattice operations \emph{meet} and \emph{join} as binary operations on preferences. Our interpretation for how agents \emph{amalgamate}, i.e.~combine, preferences is reminiscent, in fact a special case of, the calculus of relations \cite{tarski1941}, a series of rules for manipulating (general) binary relations. We begin with some definitions from order theory \cite{roman}.
+The set of transitive-reflexive preferences on a fixed set of alternatives is an algebraic structure known as an (order) lattice \cite{birkhoff1940}. We exact this observation and interpret the meaning of the lattice operations \emph{meet} and \emph{join} as binary operations on preferences. Our interpretation for how agents \emph{amalgamate}, i.e.~combine, preferences is reminiscent, in fact a special case of, the calculus of relations \cite{tarski1941}, a series of rules for manipulating (general) binary relations. We begin with some definitions from order theory \cite{roman2008}.
 
 \subsection{Ordered Sets}
 
@@ -204,30 +202,51 @@ Cartesian products of ordered sets $\P_1 \times \P_2 \times \cdots \times \P_N$ 
 Ordered sets on their own have no algebraic structure. Lattices are partial orders with a rich algebraic structure given by two merging operations called ``meet'' and ``join.''
  
 \begin{definition} \label{def:lattice}
-    An \emph{lattice} is a partial order $(\L, \preceq)$ such that for any two elements $\pi_1, \pi_2 \in \L$, the following operations,
+    An \emph{lattice} is a partial order $(\L, \preceq)$ such that, for any two elements $\pi_1, \pi_2 \in \L$ the following operations,
     \begin{align*}
         \begin{aligned}
         \pi_1 \meet \pi_2 &=& \max\{ \pi \in \L: \pi \preceq \pi_1,~\pi \preceq \pi_2 \} \\
-        \pi_1 \join \pi_2 &=& \min\{ \pi \in \L: \pi \succeq \pi_1,~\pi \succeq \pi_2 \}        
+        \pi_1 \join \pi_2 &=& \min\{ \pi \in \L: \pi \succeq \pi_1,~\pi \succeq \pi_2 \},       
         \end{aligned},
     \end{align*}
-    called \emph{meet} and \emph{join}, respectively, are well-defined. 
+    called \emph{meet} (greatest lower bound) and \emph{join} (least upper bound), exist. 
 \end{definition}
 
 We recall a set of properties that characterize lattices as ordered algebraic structures.
 
 \begin{lemma} \label{lem:lattice-axiom} 
     Suppose $(\L,\preceq)$ is a lattice. Then, $\meet, \join: \L \times \L \to \L$ satisfy the following:
-    \begin{enumerate}
-        \item \emph{commutativity}, i.e.~$\pi_1 \meet \pi_2 = \pi_2 \meet \pi_1$, $\pi_1 \join \pi_2 = \pi_2 \join \pi_1$;
-        \item \emph{associativity}, i.e. {\small $\pi_1 \meet (\pi_2 \meet \pi_3) = (\pi_1 \meet \pi_2) \meet \pi_3$}, etc.;
-        \item \emph{idempotence}, i.e.~$\pi \meet \pi = \pi \join \pi =  \pi$;
-        \item \emph{absorption}, i.e.~$\pi_1 \join \left( \pi_1 \meet \pi_2 \right) = \pi_1 \meet \left( \pi_1 \join \pi_2 \right) = \pi_1$;
-        \item \emph{monotonicity}, i.e. $\join$ and $\meet$ are monotone in both arguments.
-    \end{enumerate}
+    \begin{itemize}
+        \item[(i)] \emph{commutativity}, i.e.~$\pi_1 \meet \pi_2 = \pi_2 \meet \pi_1$, $\pi_1 \join \pi_2 = \pi_2 \join \pi_1$;
+        \item[(ii)] \emph{associativity}, i.e. {\small $\pi_1 \meet (\pi_2 \meet \pi_3) = (\pi_1 \meet \pi_2) \meet \pi_3$}, etc.;
+        \item[(iii)] \emph{idempotence}, i.e.~$\pi \meet \pi = \pi \join \pi =  \pi$;
+        \item[(iv)] \emph{absorption}, i.e.~$\pi_1 \join \left( \pi_1 \meet \pi_2 \right) = \pi_1 \meet \left( \pi_1 \join \pi_2 \right) = \pi_1$;
+        \item[(v)] \emph{monotonicity}, i.e. $\join$ and $\meet$ are monotone in both arguments.
+    \end{itemize}
 \end{lemma}
+\begin{proof}
+    See \cite[\S I.4 Lemma 1, \S I.5 Lemma 3]{birkhoff1940}.
+\end{proof}
 
-Given variables $\pi_1,\pi_2,\dots,\pi_n$, a \emph{lattice polynomial} is a term in the language $\pi_1,\pi_2,\dots,\pi_n~\vert~\pi \meet \pi'~\vert~\pi \join \pi'$, i.e.~an expression formed these symbols and parentheses. Suppose $\L$ is  lattice. Then, a lattice polynomial $p$ defines a function $p: \L^n \to \L$ by substituting an element of $\L$ into each variable of $p$.
+Given variables $\pi_1,\pi_2,\dots,\pi_n$, a \emph{lattice polynomial} is a term in the language $\pi_1,\pi_2,\dots,\pi_n~\vert~\pi \meet \pi'~\vert~\pi \join \pi'$, i.e.~an expression formed by finite application of these symbols. Suppose $\L$ is  lattice. Then, a lattice polynomial $p$ defines an evaluation map $\mathrm{ev}_p: \L^n \to \L$ by substituting an element of $\L$ into each variable of $p$.
+
+\begin{lemma} \label{lem:lattice-polynomial}
+    Suppose $p$ is a lattice polynomial. Then, $\mathrm{ev}_p(\pi_1,\pi_2,\dots,\pi_n)$ is monotone in the product lattice $\L^n$.
+\end{lemma}
+\begin{proof}
+    See \cite[\S I.5 Lemma 4]{birkhoff1940}.
+\end{proof}
+
+A lattice is \emph{complete} if, given an arbitrary indexing set $J$,
+\begin{align}
+    \begin{aligned}
+        \bigmeet_{j \in J} \pi_i = \max\{\pi \in \L : \pi \preceq \pi_j~\forall i \in I\} \\
+        \bigjoin_{j \in J} \pi_i = \min\{\pi \in \L : \pi \succeq \pi_j~\forall i \in I\}
+    \end{aligned} \label{eq:complete lattice}
+\end{align}
+exist. In particular, $\bigmeet \emptyset = \top$, the \emph{maximum element}, and $\bigjoin \emptyset = \bot$, the \emph{minimum element}.
+
+%Birkhoff Lemma 5.4
 
 % \begin{lemma}\label{lem:lattice-poly}
 %     Suppose $p$ is a lattice polynomial. Then, $p$ is monotone.
@@ -260,33 +279,43 @@ where $\pi \circ \pi = \{ (a \prefers b)~\vert~\exists c,~a \prefers c,~c \prefe
 
 The transitive closure as well as the union and intersection of preference relations are enough to specify the structure of a lattice.
 
-\begin{theorem}
-    $(\Pref(\A), \succeq)$ is a lattice with meets and joins given by the following
+\begin{theorem} \label{thm:complete-lattice}
+    $(\Pref(\A), \succeq)$ is a complete lattice with meets and joins given by the following
     \leavevmode
     \begin{align}
+ %    \begin{aligned}
+ %        \pi_1 \meet \pi_2 &=& \pi_1 &\cap \pi_2& \\
+ % \pi_1 \join \pi_2 &=&  \left(\pi_1  \right. &\left. \cup \pi_2  \right)^{+}
+ %    \end{aligned}. \label{eq:join-meets}
     \begin{aligned}
-        \pi_1 \meet \pi_2 &=& \pi_1 &\cap \pi_2& \\
- \pi_1 \join \pi_2 &=&  \left(\pi_1  \right. &\left. \cup \pi_2  \right)^{+}
-    \end{aligned}. \label{eq:join-meets}
+        \bigmeet_{j \in J} \pi_j & = &\bigcap_{j \in J} \pi_j \\
+        \bigjoin_{j \in J} \pi_j & = \biggl( &\bigcup_{j \in J} \pi_j \biggr)^{+}
+    \end{aligned}.\label{eq:meets-joins}
 \end{align}
 \end{theorem}
+\begin{proof}
+    See Appendix.
+\end{proof}
 
-We briefly interpret the meet and join operations of the \emph{information lattice}. A preference $a \prefers b$ is in the meet $\pi_1 \meet \pi_2$ if and only if it is in both $\pi_1$ and $\pi_2$. Thus, the meet of two preference relations constitutes a consensus between them. The join is somewhat more subtle. For one, by the fact that the transitive-reflexive closure satisfies the criterion for being a \emph{closure operator} \cite{roman}, $\pi_1 \join \pi_2$ is the smallest transitive-reflexive relation containing $\pi_1 \cup \pi_2$. Another interpretation exacts what it means for a pair-wise comparison to be in the join of two preference relations.
-\begin{proposition}
-    Suppose $\pi_1, \pi_2 \in \Pref(\A)$. Then, $(a \prefers b) \in \pi_1 \join \pi_2$ if and only if either, (i) $(a \prefers b) \in \pi_1 \cup \pi_2$, or, (ii) there exist a chain
+For a pair, $\pi_1 \meet \pi_2 = \pi_1 \cap \pi_2$ and $\pi_1 \join \pi_2 = \left( \pi_1 \cup \pi_2 \right)^{+}$. We briefly interpret the meet and join operations of the \emph{information lattice}. A preference $a \prefers b$ is in the meet $\pi_1 \meet \pi_2$ if and only if it is in both $\pi_1$ and $\pi_2$. Thus, the meet of two preference relations constitutes a consensus between them. The join is somewhat more subtle. For one, $\pi_1 \join \pi_2$ is the smallest transitive-reflexive relation containing $\pi_1 \cup \pi_2$. Theorem \ref{thm:complete-lattice} holds even if $\A$ is not finite. In the finite case, another interpretation exacts what it means for a pair-wise comparison to be in the join of two preference relations.
+\begin{proposition} \label{prop:join}
+    Suppose $\A$ is finite, and suppose $\pi_1, \pi_2 \in \Pref(\A)$. Then, $(a \prefers b) \in \pi_1 \join \pi_2$ if and only if either, (i) $(a \prefers b) \in \pi_1 \cup \pi_2$, or, (ii) there exist a chain
     \begin{align}
         a = c_0 \prefers_{j_1} c_1 \prefers_{j_2}  \cdots \prefers_{\ell-1} c_{j_{\ell-1}} \prefers_{j_\ell} c_{\ell} = b \label{eq:chain}
     \end{align}
     such that $\left( c_{m-1} \prefers_{{j_m}} c_{m} \right) \in \pi_1 \Delta \pi_2$ (symmetric difference).
 \end{proposition}
+\begin{proof}
+    See Appendix.
+\end{proof}
 
 Thus, the join of two preference relations facilitates the rational, i.e.~transitive, conclusion of two agents having merged their preferences.
 
+% \begin{remark}
+%     We call the lattice $(\Pref(\A), \succeq)$ an ``information order'' due to the fact that an analogous order on the set of equivalence relations, i.e.~partitions, on a fixed set, which forms a proper subset of $\Pref(\A)$, is called an ``information order'' because of its relevance in information theory \cite{shannon}.
+% \end{remark}
 \begin{remark}
-    We call the lattice $(\Pref(\A), \succeq)$ an ``information order'' due to the fact that an analogous order on the set of equivalence relations, i.e.~partitions, on a fixed set, which forms a proper subset of $\Pref(\A)$, was called an ``information order'' because of its relevance in information theory \cite{shannon}.
-\end{remark}
-\begin{remark}
-    It is also possible to design arbitrary lattice orders on $\Pref(\A)$. In this case, meets and joins have the following interpretation: the join of two preferences is the (unique) worst preference that is at least as good as both preference. Similarly, the meet of two preferences is the (unique) best preference such that both preferences are as least as good as it. We leave this approach to future work.
+    It is also possible to design other lattice orders on $\Pref(\A)$. In this case, meets and joins have the following interpretation: the join of two preferences is the (unique) worst preference that is at least as good as both preference. Similarly, the meet of two preferences is the (unique) best preference such that both preferences are as least as good as it. We leave this approach to future work.
 \end{remark}
 
 
@@ -294,7 +323,7 @@ Thus, the join of two preference relations facilitates the rational, i.e.~transi
 \section{Preference Dynamics}
 \label{sec:dynamics}
 
-In this section, we introduce a novel model of preference dynamics based on a message-passing framework. In that framework, we discuss possible message, aggregation and update rules based on the structure of the information lattice. Thus, in the spirit of opinion dynamic models, such as the DeGroot model \cite{degroot1974} or the Hegselmann-Krause model \cite{hegselmann2002}, we proceed by defining simple rules for agents aggregating information by collecting and processing the preference relations of neighboring agents, $j \in \N_i$, with respect to the topology of $\G$.
+In this section, we introduce a novel model of preference dynamics based on a message-passing framework. In that framework, we discuss possible message, aggregation and update rules based on the structure of the information lattice. Thus, in the spirit of opinion dynamic models, such as the DeGroot model \cite{degroot1974} or the Hegselmann-Krause model \cite{hegselmann2002}, we proceed by defining simple rules for agents aggregating information by collecting and processing the preference relations of neighboring agents, $j \in \N_i$, with respect to the topology of $\G = (\N,\E)$.
 
 \subsection{The Model}
 
@@ -313,21 +342,21 @@ For the remainder of this section, we discuss candidates for the functions $\psi
 \begin{algorithm}[t]
 \caption{$\mathsf{UpdatePreference}$} \label{alg:messsage-passing}
 \SetKwComment{Comment}{/* }{ */}
-\KwData{Agent, $i \in \N$; preference, $\pi$;  message function, $\psi$; aggregation function, $\Aggregate(\cdot)$; update function, $\varphi$.}
-\KwResult{Preference, $\pi$.}
+\KwData{Agent, $i \in \N$; preference, $\pi_i \in \Pref(\A)$;  message function, $\psi$; aggregation function, $\Aggregate(\cdot)$; update function, $\varphi$.}
+\KwResult{Preference, $\pi_i \in \Pref(\A)$.}
 $\mathcal{M} \gets [~]$ \\
 \For{$j \in \N_i$}{
-$\pi' \gets \mathsf{Preference}(j)$ \\
-$j$ sends $\psi(\pi',\pi)$ to Agent $i$, \\
-$i$ receives $\pi_{\mathrm{mes}} \gets \psi(\pi',\pi)$, \\
-$i$ appends $\pi_{\mathrm{mes}}$ to $\mathcal{M}$,
+$\pi_j \gets \mathsf{Preference}(j)$ \\
+Agent $j$ sends $\psi(\pi_i,\pi_j)$ to Agent $i$, \\
+Agent $i$ receives $\pi_{\mathrm{mes}} \gets \psi(\pi_i,\pi_j)$, \\
+Agent $i$ appends $\pi_{\mathrm{mes}}$ to $\mathcal{M}$,
 }
 $\pi_{\mathrm{agg}} \gets \mathsf{Aggregate}\left( \mathcal{M} \right)$, \\
-$\pi \gets \varphi(\pi, \pi_{\mathrm{agg}})$.
+$\pi_i \gets \varphi(\pi_i, \pi_{\mathrm{agg}})$.
 \end{algorithm}
 
 \paragraph*{Messages}
-Message functions $\psi(\pi_j,\pi_i)$ that are invariant to the second argument are said to be \emph{isotropic} because there is no feedback in the resulting ``diffusion'' process. In the isotropic case, if $\psi(\pi_j) = \pi_j$, Agent $j$ represents their preference faithfully and communicates it to Agent $i$. Such agents can be thought of as being honest. Dishonest agents misrepresent their true preferences with a non-trivial map $\psi: \Pref(\A) \to \Pref(\A)$. In the opinion dynamics literature \cite{hansen2021}, behaviors such as exaggerating opinions, restricting the topics of discussion, or lying can be represented by similar maps. We expect analogous behaviors to be modeled with appropriate transformations of preference relations. In the non-isotropic case, agents represent their preferences as a result of feedback. In the simplest instance, Agent $j$ could pretend its preference is the same as Agent $i$, i.e.~$\psi(\pi_j,\pi_i) = \pi_j$, but more complex feedback mechanisms are possible.
+Message functions $\psi(\pi_i,\pi_j)$ that are invariant to the first argument are said to be \emph{isotropic} because there is no feedback in the resulting ``diffusion'' process. In the isotropic case, if $\psi(\pi_j) = \pi_j$, Agent $j$ represents their preference faithfully and communicates it to Agent $i$. Such agents can be thought of as being honest. Dishonest agents misrepresent their true preferences with a non-trivial map $\psi: \Pref(\A) \to \Pref(\A)$. In the opinion dynamics literature \cite{hansen2021}, behaviors such as exaggerating opinions, restricting the topics of discussion, or lying can be represented by similar maps. We expect analogous behaviors to be modeled with appropriate transformations of preference relations. In the non-isotropic case, agents represent their preferences as a result of feedback. In the simplest instance, Agent $j$ could pretend its preference is the same as Agent $i$, i.e.~$\psi(\pi_j,\pi_i) = \pi_j$, but more complex feedback mechanisms are possible.
 
 \paragraph*{Aggregation}
 % It is commonly assumed in message-passing algorithms that the order messages are received has no bearing on the resulting aggregate preference \cite{?}. In the present case, this means that the identities of the agents are anonymous, or, at least, every neighbor $j \in \N_i$ is treated equally. The lattice structure of the information order on preferences provides a natural hierarchy of aggregation functions which we now examine. Since there is no way to ``average'' preferences numerically, the lattice median seems a good fit for an aggregation mechanism that can produce stable preference profiles. It is also obvious that lattice medians are invariant to permutations of the labels of the agents.
@@ -349,25 +378,30 @@ and $r$-\emph{middle} if, given $1 \leq r \leq n$, the ordering $\pi_{j_1} \prec
     Suppose $r \geq 0$. The $r$-\emph{median} is the aggregation function
 \begin{align}
     \Median_{r,n}\left( \pi_{j_1},\pi_{j_2,}\dots,\pi_{j_n}\right) =
-    \bigjoin_{\underset{|I| \geq r }{I \subseteq \{1,2,\dots,n\}}} \biggl( \bigmeet_{m \in I} \pi_{j_m} \biggr)
+    \bigjoin_{\underset{|J| \geq r }{J \subseteq \{1,2,\dots,n\}}} \biggl( \bigmeet_{m \in J} \pi_{j_m} \biggr)
 \end{align} \label{eq:median}
 \end{definition}
 
-\noindent The $r$-median satisfies the above properties.
-
-\begin{proposition}
-    $\Median_{r,n}(\cdot)$ satisfies anonymity, unanimity, and $r$-middle.
+\begin{proposition} \label{prop:median}
+    $\Median_{r,n}(\cdot)$ satisfies the axioms of anonymity, unanimity, and $r$-middle.
 \end{proposition}
+\begin{proof}
+    For the first, the set $\{I \subseteq \{1,2,\dots,n\}: |I| \geq r\}$ is invariant under permutation. Lemma \ref{lem:lattice-axiom}-(iii), for the second. For the third, by anonymity, we can, without loss of generality, write each $J$ in the set $\{I \subseteq \{1,2,\dots,n\}: |I| \geq r\}$ as $\{j_m,j_{m+1},\dots,j_{m+r+1}\}$. Then, 
+    % of cardinality greater than $r$ is clearly the smallest $\pi_{j_m} \in J$, in cardinality. Over every $J$ in the set $\{I \subseteq \{1,2,\dots,n\}: |I| \geq r\}$, the join is the largest $\pi_{j_m}$ that is not smaller than 
+\end{proof}
 
 Anonymity implies the order messages are received or the identity of the sender has no bearing on the resulting aggregate preference, in some settings, anonymising agent's identities, in others, a notion of fairness. Unanimity implies that if every agent has the same preference, the aggregate should, surely, reflect this. Finally, the $r$-middle condition implies, if a series of agents contain each others preferences, meaning agents' preference differ only by adding comparisons to the preference relation of an existing agent, the aggregate preference will be the $r$-th preference. These properties along with the following observation suggest the $r$-median is appropriate for preference aggregation.
 
-\begin{proposition}
-    $a \prefers b$ is in $\Median_r(\pi_{\N_i})$ if and only if there exist a chain
+\begin{proposition} \label{prop:median-chain}
+    Suppose $\A$ is finite. Then, $a \prefers b$ is in $\Median_r(\pi_{\N_i})$ if and only if there exist a chain
     \begin{align*}
         a = c_0 \prefers_{j_1} c_1 \prefers_{j_2} \cdots \prefers_{\ell-1} c_{j_{\ell-1}} \prefers_{j_\ell} c_{\ell} = b
     \end{align*}
     and a federation of neighbors into coalitions \[\{ J_m : |J_m| \geq r \}_{m=1}^{\ell} \subseteq \N_i\] such that $(c_{m-1} \prefers_{j} c_{m}) \in \pi_j$ for all  $j \in J_m$.
 \end{proposition}
+\begin{proof}
+    Follows from Proposition \ref{prop:join}.
+\end{proof}
 
 Thus, $a \prefers b$ in in the aggregate if and only if there is a coalition of $r$ agents formed among the neighbor set, $\N_i$. Hence, the choice of $r$ is a threshold for constituting a ``majority'' rule \cite{buchanan1965calculus}. If $r$ is small, only a few agents need to come to a consensus on a particular comparison. Similarly, an agent with large $r$, requires a larger coalition of agents to reach consensus. Hence, the value of $r$ for a particular agent is a measure of stubbornness. The extremal cases illustrate this fact: if $r= n$, then the median is the join projection $\bigjoin_{m=1}^n \pi_{j_m}$. On the other hand, if $r=1$, the median is the meet projection $\bigmeet_{m=1}^n \pi_{j_m}$. Finally, the degenerate cases suggest the impossibility of forming any coalition at all ($r=0$) or a coalition large enough to reach a consensus ($r > |\N_i|$) leads to the fully-indecisive preference $\Median_r(\pi_{\N_j}) = \iota$ and the fully-indifferent preference $\Median_r(\pi_{\N_j}) = \epsilon$, respectively.
 
@@ -391,7 +425,7 @@ Suppose $F = (F_1,F_2,\dots,F_N)$ is given. i.e.~$F: \Pref(\A)^N \to \Pref(\A)^N
 \end{align}
 system are collected in the following set
 \begin{align*}
-    \S = \{\profile \in \Pref(\A)^N : \exists k_0 \geq 0, \profile(k) = \profile~\forall k \geq k_0\}.
+    \SS = \{\profile \in \Pref(\A)^N : \exists k_0 \geq 0, \profile(k) = \profile~\forall k \geq k_0\}.
 \end{align*}
 In order to utilize the algebraic structure of preference profiles to study the equilibrium point of the system, we impose some constraints on $F$. 
 
@@ -400,57 +434,63 @@ Suppose $F$ is monotone. Then, $\profile \preceq \profile'$ (i.e. $\pi_i \preceq
 \begin{lemma} \label{lem:message-passing}
     Suppose, in \eqref{eq:message-passing}, the maps $\psi$, $\Aggregate(\cdot)$ and $\varphi$ are lattice polynomials for every $i \in \N$. Then, $F$ is monotone.
 \end{lemma}
+\begin{proof}
+    By Lemma \ref{lem:lattice-polynomial} and the observation that the composition and product $f = (f_1,f_2)$ of monotone functions is monotone.
+\end{proof}
 
 % Recall, a complete lattice is a lattice $\L$ such that arbitrary meets $\bigjoin U$ and $\bigmeet U$ exist for every $U \subseteq \L$. 
 
 We recall a theorem equipping fixed points with a lattice structure.
-\begin{lemma}[Tarski Fixed Point Theorem \cite{tarski}] \label{lem:tfpt}
-    Suppose $\L$ is a complete lattice and $F: \L \to \L$ is monotone. Then, $\Fix(F)$ is a lattice.
+\begin{lemma}[Tarski Fixed Point Theorem \cite{tarski1955}] \label{lem:tfpt}
+    Suppose $\L$ is a complete lattice and $f: \L \to \L$ is monotone. Then, $\Fix(f)$ is a lattice.
 \end{lemma}
+\begin{proof}
+    See \cite[Theorem 12.2]{roman2008}. \textcolor{red}{Include a proof?}
+\end{proof}
 
 The Tarski Fixed Point Theorem directly implies the following result which characterizes the equilibrium points of the global dynamics
 \begin{theorem} \label{thm:dynamics}
-    Suppose $F$ is monotone. Then, $\S$ forms a complete lattice.
+    Suppose $F$ is monotone. Then, $\SS$ forms a complete lattice.
 \end{theorem}
+\begin{proof}
+    Clearly, $\SS = \Fix(F)$. By Theorem \ref{thm:complete-lattice}, $\Pref(\A)$ is complete. It follows that the product $\Pref(\A)^N$ is complete. Apply Lemma \ref{lem:tfpt}.
+\end{proof}
 
-Together with Lemma \ref{lem:message-passing}, Theorem \ref{thm:dynamics} implies that there exist stable preference profiles of the model we proposed in Section \ref{sec:dynamics}. In particular, there exist a maximum and minimum stable preference profile.
-
-\begin{corollary}
-    $\lfp(F)$ and $\gfp(F)$ are the minimum and maxiumum stable preference profiles with respect to the product information order.
-\end{corollary}
-
-Thus, equilibrium points of preference dynamics exist, although are not, in general, unique. However, by virtue of the fixed points forming a lattice, there exist unique greatest and least least equilibrium points with respect to the product information order. The greatest (resp.~least) equilibrium point is the stable preference profile with the most (resp.~least) alternatives compared. More generally, the meet and join of stable preference profiles exist: if $\profile, \profile'$ are stable preference profiles, there is a largest \emph{stable} preference profile $\profile \meet_{\S} \profile'$ contained by both $\profile$ and $\profile'$. There also exist a smallest \emph{stable} preference profile $\profile \join_{\S} \profile'$ containing both $\profile$ and $\profile'$. As a point of warning, the operations $\meet_\S$ and $\join_S$ do not necessarily coincide with $\meet$ and $\join$ in $\Pref(\A)^N$, given by the lattice operations on the product order.
+Together with Lemma \ref{lem:message-passing}, Theorem \ref{thm:dynamics} implies that there exist stable preference profiles of the model we proposed in Section \ref{sec:dynamics}. In particular, there exist a maximum and minimum stable preference profile. Thus, equilibrium points of preference dynamics exist, although are not, in general, unique. However, by virtue of the fixed points forming a lattice, there exist unique greatest and least least equilibrium points with respect to the product information order. The greatest (resp.~least) equilibrium point is the stable preference profile with the most (resp.~least) alternatives compared. More generally, the meet and join of stable preference profiles exist: if $\profile, \profile'$ are stable preference profiles, there is a largest \emph{stable} preference profile $\profile \meet_{\SS} \profile'$ contained by both $\profile$ and $\profile'$. There also exist a smallest \emph{stable} preference profile $\profile \join_{\SS} \profile'$ containing both $\profile$ and $\profile'$. As a point of warning, the operations $\meet_\SS$ and $\join_S$ do not necessarily coincide with $\meet$ and $\join$ in $\Pref(\A)^N$, given by the lattice operations on the product order.
 
 
 \subsection{Computing Equilibrium Points}
 
-Theorem \ref{thm:dynamics} not provide an algorithm to compute stable preference profiles, it only guarantees their existence. We examine initial preference profiles for which trajectories of \eqref{eq:global-pi} converge to stable preference profiles. In our analysis, we require that the number of alternatives in $\A$ is finite.x
+Theorem \ref{thm:dynamics} not provide an algorithm to compute stable preference profiles, it only guarantees their existence. We examine initial preference profiles for which trajectories of \eqref{eq:global-pi} converge to stable preference profiles.
 
-\begin{theorem} \label{thm:initial-conditions}
+\begin{proposition} \label{prop:initial-conditions}
     Suppose $\A$ is finite, $F$ is monotone, and $\profile(0) \in \Pre(F) \cup \Post(F)$. Then, $\profile(k)$ converges to an equilibrium point in a finite number of iterations for every initial profile $\profile(0) \in \Pref(\A)^N$.
-\end{theorem}
+\end{proposition}
 \begin{proof}
-    We show the first case. (The second follows by order duality.) Suppose $\profile(0) \in \Pre(F)$, that is, $\profile(0) \preceq F\left(\profile(0) \right)$. Then, by monotonicity $F(\profile(0)) \preceq F\left( F(\profile(0))\right)$. Continuing in this way implies
+    We show the first case. Suppose $\profile(0) \in \Pre(F)$. Then, by monotonicity, $F(\profile(0)) \preceq F\left( F(\profile(0))\right)$. Continuing in this way implies
     \begin{align}
         F^{k+1}\left( \profile(0)\right)  = \profile(k+1) \preceq \profile(k) \preceq \cdots \preceq \profile(0) \label{eq:chain}
-    \end{align} For each $k$, either $\profile(k+1) \prec \profile(k)$, or $\profile(k+1) = \profile(k)$, in which case $\profile(k) \in \Fix(F)$. Because the set of alternatives $\A$ is finite, $\Pref(\A)$ is finite, which implies every chain is finite. Thus, the chain \eqref{eq:chain} either converges to the trivial preference $\epsilon$, which, then, is necessarily a fixed point, or otherwise converges to another fixed point, the preference at which the decreasing chain terminates.
+    \end{align} For each step in the chain, either $\profile(k+1) \prec \profile(k)$, or $\profile(k+1) = \profile(k)$, in which case $\profile(k) \in \Fix(F)$. Because $\A$ is finite, $\Pref(\A)$ is finite, which implies every chain is finite. Thus, the \eqref{eq:chain} either converges to the trivial preference $\epsilon$, which, then, is necessarily a fixed point, or otherwise converges to another fixed point, the preference at which the decreasing chain terminates.
 \end{proof}
 
-This rather-stringent condition on the initial profile $\profile(0)$ specifies either $F_i(\profile(0)) \preceq \pi_i(0)$ for all $i \in \N$ or $F_i(\profile(0)) \succeq \pi_i(0)$ for all $i \in \N$. The minimum and maximum preference profile are guaranteed to satisfy the condition. Moreover, trajectories with these initial conditions converge to the minimum and maximum stable preference profiles.
+While the conditions on Proposition \ref{prop:initial-conditions} are rather stringent, the minimum and maximum preference profile are guaranteed to satisfy the condition. Moreover, trajectories with these initial conditions converge to the minimum and maximum stable preference profiles.
 
 \begin{corollary}
-    Suppose $\profile(0) = \boldsymbol{\epsilon}$, or $\boldsymbol{\iota}$. Then, $\profile(k)$ converges to $\lfp(F)$ and $\gfp(F)$, respectively.
+    Suppose $\A$ is finite, and suppose $\profile(0) = \boldsymbol{\epsilon}$ or $\boldsymbol{\iota}$. Then, $\profile(k)$ converges to $\lfp(F)$ and $\gfp(F)$, respectively.
 \end{corollary}
 
-On the other hand, if $F$ is deflationary or inflationary (not necessarily monotone), then applying the result of message-passing, aggregating, and updating a preference will only reveal more comparisons and prune the set of comparisons, respectively. For instance, the choice of the update function $\varphi(\pi,\pi_{\text{agg}}) = \pi \meet \pi_{\text{agg}}$ for every $i \in \N$ will result in a deflationary $F$, while the choice of the update function 
+On the other hand, if $F$ is deflationary or inflationary (not necessarily monotone), then updates will only reveal more comparisons, or prune the set of comparisons, respectively. For instance, the choice of the update function $\varphi(\pi,\pi_{\text{agg}}) = \pi \meet \pi_{\text{agg}}$ for every $i \in \N$ will result in a deflationary $F$, while the choice of the update function 
 $\varphi(\pi,\pi_{\text{agg}}) = \pi \join \pi_{\text{agg}}$ will result in an inflationary $F$. Either of these properties is sufficient for arbitrary trajectories to converge to fixed points.
 
-\begin{proposition}
+\begin{proposition} \label{prop:inflationary}
      Suppose $\A$ is a finite, and suppose $F$ is deflationary or inflationary. Then, $\profile(k)$ converges to a equilibrium point in a finite number of iterations.
 \end{proposition}
+\begin{proof}
+    See Appendix.
+\end{proof}
 
 \subsection{Periodic Orbits}
-We say an orbit is periodic if there is $T>0$ and a $k_0 \geq 0$ such that $\profile(k+T) = \profile(k)$ for all $k \geq k_0$. We show, by example, that when $\profile(0) \notin \Pre(F) \cup \Post(F)$, trajectories can enter periodic orbits.
+When trajectories do not converge to stable profiles, they can exhibit periodic behavior. We say an orbit is periodic if there is $T>0$ and a $k_0 \geq 0$ such that $\profile(k+T) = \profile(k)$ for all $k \geq k_0$. We show, by example, that when $\profile(0) \notin \Pre(F) \cup \Post(F)$, trajectories can enter periodic orbits.
 
 \begin{example}[Periodic Orbit]
     Suppose four agents are connected by a ring graph, and suppose $F_i(\profile) = \bigmeet_{j \in \N_i} \pi_j$. Suppose $\profile(0) = (\pi_1,\pi_2,\pi_3,\pi_4)$ is an initial condition. Then, $\profile(k)$ has the following orbit
@@ -465,18 +505,20 @@ We say an orbit is periodic if there is $T>0$ and a $k_0 \geq 0$ such that $\pro
     If $\pi_1 \meet \pi_3 \neq \pi_2 \meet \pi_4$, then the orbit is a period-$2$ cycle. We leave the reader to show that $\pi_1 \meet \pi_3 = \pi_2 \meet \pi_4$ implies $\profile(0) \in \Pre(F) \cup \Post(F)$. Hence, it the latter case, $\profile(k)$ converges to a fixed point. A similar argument applies to any ring topology with an even number of agents, or with the join operation instead of the meet.
 \end{example}
 
+In this regime of periodic orbits, preferences are never settled. Instead, agents cyclicly alternate their preferences \emph{ad infinitum}. We are curious to whether such a phenomenon has been exhibited in economic or social settings.
+
 
 \section{Experiments}
 \label{sec:experiments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{Future Work}
-\label{sec:future-work}
+\section{Discussion}
+\label{sec:discussion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \paragraph*{Algorithms}
-Theorem \ref{thm:initial-conditions} implies that you can compute fixed points by, first, querying initial conditions until $\boldsymbol{\pi(0)} \in \Pre(F) \cup \Post(F)$, then, computing trajectories until they converge. It is not clear if you would achieve better complexity than exhaustive search of $\Pref(\A)^N$ by this method. Is it possible to find an aribitrary fixed point in some other way? Suppose $\P = \{1,2,\dots,n\}$ with the standard order. For the product lattice $\P^d$, there is an inductive algorithm on $d$ for computing fixed points of a monotone function $f: \P^d \to \P^d$ running in $O(\log^d n)$ time \cite{?}. The base-case, finding a fixed point of $f: \P \to \P$, is equivalent to binary search: Initialize $m = \lceil n/2 \rceil$. If $f(m) < m$, restrict $f$ to $f: \{1,2,\dots,m-1\} \to \{1,2,\dots,m-1\}$. If $f(m) > m$, restrict $f$ to $f: \{m+1,m+2,\dots,n\} \to \{m+1,m+2,\dots,n\}$. Otherwise, $f(m) = m$ and you are done. An analogous inductive algorithm is not possible, in our case, because, in the base case $f: \Pref(\A) \to \Pref(\A)$, the binary search method would require the information order on $\Pref(\A)$ to be a chain, i.e.~totally ordered. To the best of our knowledge, there are no algorithms for computing fixed points of finite lattices, in general, besides exhaustive search.
+Proposition \label{prop:initial-conditions} implies that you can compute fixed points by, first, querying initial conditions until $\boldsymbol{\pi(0)} \in \Pre(F) \cup \Post(F)$, then, computing trajectories until they converge. It is not clear if you would achieve better complexity than exhaustive search of $\Pref(\A)^N$ by this method. Is it possible to find an aribitrary fixed point in some other way? Suppose $\P = \{1,2,\dots,n\}$ with the standard order. For the product lattice $\P^d$, there is an inductive algorithm on $d$ for computing fixed points of a monotone function $f: \P^d \to \P^d$ running in $O(\log^d n)$ time \cite{?}. The base-case, finding a fixed point of $f: \P \to \P$, is equivalent to binary search: Initialize $m = \lceil n/2 \rceil$. If $f(m) < m$, restrict $f$ to $f: \{1,2,\dots,m-1\} \to \{1,2,\dots,m-1\}$. If $f(m) > m$, restrict $f$ to $f: \{m+1,m+2,\dots,n\} \to \{m+1,m+2,\dots,n\}$. Otherwise, $f(m) = m$ and you are done. An analogous inductive algorithm is not possible, in our case, because, in the base case $f: \Pref(\A) \to \Pref(\A)$, the binary search method would require the information order on $\Pref(\A)$ to be a chain, i.e.~totally ordered. To the best of our knowledge, there are no algorithms for computing fixed points of finite lattices, in general, besides exhaustive search.
 
 \paragraph*{Metapreferences}
 Suppose we are able to call to an oracle that produces an arbitrary fixed point, i.e.~a stable preference profile. Is this preference profile desirable? In future work, we want to prune the set of preferences in such a away that stable preferences are acceptable to human supervisors. Critical in this line of reasoning is the notion of a \emph{metapreference},  or higher-order preference, a notion of a preference over preferences. Formally, an arbitrary ordering on a set of preferences \cite{lutskanov2015}, a narrower class of metapreferences can be represented by utility functions on a set of preference relations, which can be interpreted as measuring the cost or benefit of a preference to the agent as well as the supervisor \cite{munger2019}. Utility functions representing a given metapreferene relation are not unique, i.e.~utility functions capture more than the relative order of preferences. The values of metapreference utilities reflect the degree to which adding additional relations $a \prefers b$ will increase or decrease utility. If every agent has a utility function specifying the cost or benefit of holding every possible preference, maximizing
@@ -492,11 +534,11 @@ We assumed that the topology is fixed so that agents interact with the same set 
 % \begin{align*}
 %         \mathcal{S} = \{ \profile \in \Pref(\A)^N: \exists k_0 \geq 0,~\profile(k) = \profile~\forall~k \geq k_0 \}.
 % \end{align*}
-While it is clear that the time-invariant solutions can be identified as intersections and unions of $\{\Fix(F_k)\}_{k = 0}^{\infty}$, these solutions no longer have the structure of a lattice (Theorem \ref{thm:dynamics}), in general. Furthermore, it is not clear what constraints on the connectedness of $\G(t)$ need to be imposed in order to guarantee  non-emptiness of $\S$ or other desirable properties.
+While it is clear that the time-invariant solutions can be identified as intersections and unions of $\{\Fix(F_k)\}_{k = 0}^{\infty}$, these solutions no longer have the structure of a lattice (Theorem \ref{thm:dynamics}), in general. Furthermore, it is not clear what constraints on the connectedness of $\G(t)$ need to be imposed in order to guarantee  non-emptiness of $\SS$ or other desirable properties.
 % \begin{proposition}
 %     Suppose $F_k: \Pref(\A)^N \to \Pref(\A)^N$ is monotone for all $k \geq 0$. If $\profile(k+1) = F_k\left( \profile(k)\right)$, then the time-invariant solutions are
 %     \begin{align*}
-%         \S = \bigcup_{k_0 \geq 0} \bigcap_{k \geq k_0} \Fix(F_k)
+%         \SS = \bigcup_{k_0 \geq 0} \bigcap_{k \geq k_0} \Fix(F_k)
 %     \end{align*}
 % \end{proposition}
 
@@ -505,6 +547,10 @@ While it is clear that the time-invariant solutions can be identified as interse
 \bibliography{IEEEabrv,biblio}
 
 \appendix
+
+\subsection*{Proof of Theorem \ref{thm:complete-lattice}}
+
+\subsection*{Proof of Proposition \ref{prop:join}}
 
 
 
