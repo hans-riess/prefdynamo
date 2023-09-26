@@ -7,6 +7,7 @@
 % \usepackage{caption}
 \usepackage[ruled,linesnumbered]{algorithm2e}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{microtype}
@@ -29,6 +30,7 @@
 \renewcommand{\SS}{\mathcal{S}}
 \newcommand{\G}{\mathcal{G}}
 \newcommand{\E}{\mathcal{E}}
+\newcommand{\D}{\mathcal{D}}
 \newcommand{\Pref}{\mathsf{Pre}}
 \renewcommand{\L}{\mathcal{L}}
 \newcommand{\prefers}{\succsim}
@@ -77,13 +79,14 @@
 
 \begin{document}
 
-\title{\bf Towards Decentralized Optimal Control of Preferences}
+\title{\bf Preference Dynamics \textcolor{red}{title?}}
 
-\author{Hans Riess, Michael C. Munger, Robert Ghrist, and Michael M.~Zavlanos% <-this % stops a space
+\author{Hans Riess, Gregory Henselman-Petrusek, Michael C.~Munger, Robert Ghrist, Zachary I.~Bell, and Michael M.~Zavlanos% <-this % stops a space
 \thanks{Hans Riess is with the Department of Electrical \& Computer Engineering, Duke University. Email: {\tt hans.riess@duke.edu} (corresponding author).}%
-% \thanks{Gregory Henselman-Petrusek is with the Pacific Northwest National Labratory.}%
+v\thanks{Gregory Henselman-Petrusek is with the Pacific Northwest National Labratory.}%
 \thanks{Michael Munger is with the Department of Economics and the Deparment of Political Science, Duke University.}%
 \thanks{Robert Ghrist is with the Department of Electrical \& Systems Engineering, University of Pennsylvania.}%
+\thanks{Zachary Bell is with the Air Force Research Laboratory, Eglin AFB.}%
 \thanks{Michael Zavlanos is with the Department of Mechanical Engineering \& Material Science, Duke University.}%
 }
 \maketitle
@@ -150,10 +153,10 @@ Irreflexive preferences are said to be \emph{strict} while reflexive preferences
 
 Intransitive preferences are inconsistent. We remark that we do \emph{not} assume preferences are complete, i.e.~we do not assume for all $a,b \in \A$, $a \prefers_i b$ or $b \prefers_i a$. Thus, an agent may be indecisive, or, alternatively, limited information about an agent's preferences is known. 
 
-Let $\profile = \left( \prefers_1, \prefers_2, \dots, \prefers_N \right)$ be a tuple of preference relations indexed by each agent, called a \emph{preference profile}. We study how a preference profile changes based on interactions between agents. If $J \subseteq \N$ is a group of agents, we let $\pi_{J}$ be the preference profile restricted the indices in $J$; in particular, $\pi_j$ is simply $\prefers_j$. Agents update their preferences in a series of rounds indexed by discrete time instants $k=0,1,2,\dots$ according to coupled dynamics
+Let $\profile = \left( \prefers_1, \prefers_2, \dots, \prefers_N \right)$ be a tuple of preference relations indexed by each agent, called a \emph{preference profile}. We study how a preference profile changes based on interactions between agents. If $J \subseteq \N$ is a group of agents, we let $\pi_{J}$ be the preference profile restricted the indices in $J$; in particular, $\pi_j$ is simply $\prefers_j$. Agents update their preferences in a series of rounds indexed by discrete time instants $t=0,1,2,\dots$ according to coupled dynamics
 \begin{align}
     \begin{aligned}
-        \pi_i(k+1) &=& F_i \bigl( \profile(k) \bigr)  \\
+        \pi_i(t+1) &=& F_i \bigl( \profile(t) \bigr)  \\
         \pi_i(0) &=& \pi_{i,0}
     \end{aligned}, \quad i \in \N
     \label{eq:pi-dynamics}
@@ -162,7 +165,7 @@ where $F_i: \Pref(\A)^N \to \Pref(\A)$ is an iterative map.
 
 The first problem we address in this paper is modeling preference dynamics over a graph. Unlike opinion dynamics, in which standard dynamical systems theory can at least model how likes and dislikes on topics change over time, preference dynamics requires some level of algebraic sophistication. Thus, notions of structure-preserving maps as well as binary operations on preference relations are introduced with no assumed background (Section \ref{sec:lattices}). If we suppose agents update their preferences according to dynamics of the form \eqref{eq:pi-dynamics}, what sorts maps $F_i$, preserving the structure of preferences, model the process of preference revision? In our design of $F_i$, we focus on several aspects of preference change including agents having different ``personalities'' informing how they communicate, aggregate, and update preferences, agents fairly incorporating new comparisons into their preferences given a high enough level of consensus, all the while maintaining the consistency (transitivity) of their own preferences.
 
-The second problem we address is a computational one. Suppose preferences evolve according to \eqref{eq:pi-dynamics} and the iterative maps $F_i$ are known.
+The second problem we address is a computational one. Suppose preferences evolve according to \eqref{eq:pi-dynamics} and the iterative maps $F_i$ are known. \textcolor{red}{Need to finish!}
 
 % \begin{table}
 % \centering
@@ -333,14 +336,14 @@ Next, after collecting the messages as they are received (Line 5-6), agents aggr
 \begin{align}
     F_i(\profile) = \varphi\Bigl(\pi_i, \Aggregate{\left[ \psi(\pi_j, \pi_i)\right]_{j \in \N_i}} \Bigr) \label{eq:message-passing}
 \end{align}
-for the local preference updates $\pi_i(k+1) = F_i\left( \profile(k) \right)$.
+for the local preference updates $\pi_i(t+1) = F_i\left( \profile(t) \right)$.
 
 \subsection{Examples}
 
 For the remainder of this section, we discuss candidates for the functions $\psi, \Aggregate(\cdot)$, and $\varphi$, noting how various personalities of agents affect the choice of functions. In particular, we address functions that utilize the lattice structure of the information order.
 
 \begin{algorithm}[t]
-\caption{$\mathsf{UpdatePreference}$} \label{alg:messsage-passing}
+\caption{$\mathsf{RevisePreference}$} \label{alg:messsage-passing}
 \SetKwComment{Comment}{/* }{ */}
 \KwData{Agent, $i \in \N$; preference, $\pi_i \in \Pref(\A)$;  message function, $\psi$; aggregation function, $\Aggregate(\cdot)$; update function, $\varphi$.}
 \KwResult{Preference, $\pi_i \in \Pref(\A)$.}
@@ -406,7 +409,7 @@ Anonymity implies the order messages are received or the identity of the sender 
 Thus, $a \prefers b$ in in the aggregate if and only if there is a coalition of $r$ agents formed among the neighbor set, $\N_i$. Hence, the choice of $r$ is a threshold for constituting a ``majority'' rule \cite{buchanan1965calculus}. If $r$ is small, only a few agents need to come to a consensus on a particular comparison. Similarly, an agent with large $r$, requires a larger coalition of agents to reach consensus. Hence, the value of $r$ for a particular agent is a measure of stubbornness. The extremal cases illustrate this fact: if $r= n$, then the median is the join projection $\bigjoin_{m=1}^n \pi_{j_m}$. On the other hand, if $r=1$, the median is the meet projection $\bigmeet_{m=1}^n \pi_{j_m}$. Finally, the degenerate cases suggest the impossibility of forming any coalition at all ($r=0$) or a coalition large enough to reach a consensus ($r > |\N_i|$) leads to the fully-indecisive preference $\Median_r(\pi_{\N_j}) = \iota$ and the fully-indifferent preference $\Median_r(\pi_{\N_j}) = \epsilon$, respectively.
 
 \paragraph*{Updates}
-We examine four update functions which, along with the a choice of $\psi$ and $\Aggregate(\cdot)$, characterize the personality of an agent. Suppose $\pi = \Aggregate\left[\psi(\pi_j,\pi_i)\right]_{j \in \N_i}$ is the result of aggregating neighbors' revealed preferences. On one hand, an agent who is single-minded will not take into account the preferences of neighbors, i.e.~$\varphi(\pi_i,\pi) = \pi_i$. On the other hand, an agent who is highly-empathetic might ignore their prior preferences, i.e.~$\varphi(\pi_i,\pi) = \pi$. The choice of meet or join for $\varphi$ has interesting implications as well. Suppose an agent is examining the validity of a previously-held comparison $a \prefers b$. It that comparison is in $\pi$, then the meet, i.e.~$\varphi(\pi_i,\pi) = \pi_i \meet \pi$, resembles a confirmation bias: if $a \prefers b$ is in the aggregate preference, the comparison is kept, otherwise discarded. On the other hand, if the goal of an agent is to learn by observing other agents' preferences, the join, i.e.~$\varphi(\pi_i,\pi) = \pi_i \join \pi$, models the process of integrating a prior-held preference with new observations.
+We examine four update functions which, along with the a choice of $\psi$ and $\Aggregate(\cdot)$, characterize the personality of an agent. Suppose $\pi_{\mathrm{agg}} = \Aggregate\left[\psi(\pi_j,\pi_i)\right]_{j \in \N_i}$ is the result of aggregating neighbors' revealed preferences. On one hand, an agent who is single-minded will not take into account the preferences of neighbors, i.e.~$\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_i$, the \emph{prior} update rule. On the other hand, an agent who is highly-empathetic might ignore their prior preferences, i.e.~$\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_{\mathrm{agg}}$, the \emph{posterior} update rule. The choice of meet or join for $\varphi$ has interesting implications as well. Suppose an agent is examining the validity of a previously-held comparison $a \prefers b$. It that comparison is in $\pi$, then the meet, i.e.~$\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_i \meet \pi_{\mathrm{agg}}$, resembles a confirmation bias: if $a \prefers b$ is in the aggregate preference, the comparison is kept, otherwise discarded. On the other hand, if the goal of an agent is to learn by observing other agents' preferences, the join, i.e.~$\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_i \join \pi_{\mathrm{agg}}$, models the process of integrating a prior-held preference with new observations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Stable Preference Profiles}
@@ -419,13 +422,13 @@ Stable preference profiles consist of preferences that are fixed by result of ap
 Suppose $F = (F_1,F_2,\dots,F_N)$ is given. i.e.~$F: \Pref(\A)^N \to \Pref(\A)^N$ is an arbitrary iterative map sending preference profiles to preference profiles. The \emph{equilibrium points} of the resulting global preference dynamical system
 \begin{align}
     \begin{aligned}
-        \profile(k+1) &=& F\left( \profile(k) \right) \\
+        \profile(t+1) &=& F\left( \profile(t) \right) \\
         \profile(0) &=& \profile_0
     \end{aligned} \label{eq:global-pi}
 \end{align}
 system are collected in the following set
 \begin{align*}
-    \SS = \{\profile \in \Pref(\A)^N : \exists k_0 \geq 0, \profile(k) = \profile~\forall k \geq k_0\}.
+    \SS = \{\profile \in \Pref(\A)^N : \exists t_0 \geq 0, \profile(t) = \profile~\forall t \geq t_0\}.
 \end{align*}
 In order to utilize the algebraic structure of preference profiles to study the equilibrium point of the system, we impose some constraints on $F$. 
 
@@ -464,61 +467,97 @@ Together with Lemma \ref{lem:message-passing}, Theorem \ref{thm:dynamics} implie
 Theorem \ref{thm:dynamics} not provide an algorithm to compute stable preference profiles, it only guarantees their existence. We examine initial preference profiles for which trajectories of \eqref{eq:global-pi} converge to stable preference profiles.
 
 \begin{proposition} \label{prop:initial-conditions}
-    Suppose $\A$ is finite, $F$ is monotone, and $\profile(0) \in \Pre(F) \cup \Post(F)$. Then, $\profile(k)$ converges to an equilibrium point in a finite number of iterations for every initial profile $\profile(0) \in \Pref(\A)^N$.
+    Suppose $\A$ is finite, $F$ is monotone, and $\profile(0) \in \Pre(F) \cup \Post(F)$. Then, $\profile(t)$ converges to an equilibrium point in a finite number of iterations for every initial profile $\profile(0) \in \Pref(\A)^N$.
 \end{proposition}
 \begin{proof}
     We show the first case. Suppose $\profile(0) \in \Pre(F)$. Then, by monotonicity, $F(\profile(0)) \preceq F\left( F(\profile(0))\right)$. Continuing in this way implies
     \begin{align}
-        F^{k+1}\left( \profile(0)\right)  = \profile(k+1) \preceq \profile(k) \preceq \cdots \preceq \profile(0) \label{eq:chain}
-    \end{align} For each step in the chain, either $\profile(k+1) \prec \profile(k)$, or $\profile(k+1) = \profile(k)$, in which case $\profile(k) \in \Fix(F)$. Because $\A$ is finite, $\Pref(\A)$ is finite, which implies every chain is finite. Thus, the \eqref{eq:chain} either converges to the trivial preference $\epsilon$, which, then, is necessarily a fixed point, or otherwise converges to another fixed point, the preference at which the decreasing chain terminates.
+        F^{t+1}\left( \profile(0)\right)  = \profile(t+1) \preceq \profile(t) \preceq \cdots \preceq \profile(0) \label{eq:chain}
+    \end{align} For each step in the chain, either $\profile(t+1) \prec \profile(t)$, or $\profile(t+1) = \profile(t)$, in which case $\profile(t) \in \Fix(F)$. Because $\A$ is finite, $\Pref(\A)$ is finite, which implies every chain is finite. Thus, the \eqref{eq:chain} either converges to the trivial preference $\epsilon$, which, then, is necessarily a fixed point, or otherwise converges to another fixed point, the preference at which the decreasing chain terminates.
 \end{proof}
 
 While the conditions on Proposition \ref{prop:initial-conditions} are rather stringent, the minimum and maximum preference profile are guaranteed to satisfy the condition. Moreover, trajectories with these initial conditions converge to the minimum and maximum stable preference profiles.
 
 \begin{corollary}
-    Suppose $\A$ is finite, and suppose $\profile(0) = \boldsymbol{\epsilon}$ or $\boldsymbol{\iota}$. Then, $\profile(k)$ converges to $\lfp(F)$ and $\gfp(F)$, respectively.
+    Suppose $\A$ is finite, and suppose $\profile(0) = \boldsymbol{\epsilon}$ or $\boldsymbol{\iota}$. Then, $\profile(t)$ converges to $\lfp(F)$ and $\gfp(F)$, respectively.
 \end{corollary}
 
 On the other hand, if $F$ is deflationary or inflationary (not necessarily monotone), then updates will only reveal more comparisons, or prune the set of comparisons, respectively. For instance, the choice of the update function $\varphi(\pi,\pi_{\text{agg}}) = \pi \meet \pi_{\text{agg}}$ for every $i \in \N$ will result in a deflationary $F$, while the choice of the update function 
 $\varphi(\pi,\pi_{\text{agg}}) = \pi \join \pi_{\text{agg}}$ will result in an inflationary $F$. Either of these properties is sufficient for arbitrary trajectories to converge to fixed points.
 
 \begin{proposition} \label{prop:inflationary}
-     Suppose $\A$ is a finite, and suppose $F$ is deflationary or inflationary. Then, $\profile(k)$ converges to a equilibrium point in a finite number of iterations.
+     Suppose $\A$ is a finite, and suppose $F$ is deflationary or inflationary. Then, $\profile(t)$ converges to a equilibrium point in a finite number of iterations.
 \end{proposition}
 \begin{proof}
-    See Appendix.
+    The case that $F$ is monotone and deflationary follows directly from Proposition \ref{prop:initial-conditions}. In $F$ is not monotone, apply \cite[Theorem 12.19]{roman2008}.
 \end{proof}
 
 \subsection{Periodic Orbits}
-When trajectories do not converge to stable profiles, they can exhibit periodic behavior. We say an orbit is periodic if there is $T>0$ and a $k_0 \geq 0$ such that $\profile(k+T) = \profile(k)$ for all $k \geq k_0$. We show, by example, that when $\profile(0) \notin \Pre(F) \cup \Post(F)$, trajectories can enter periodic orbits.
+When trajectories do not converge to stable profiles, they can exhibit periodic behavior. We say an orbit is periodic if there is $T>0$ and a $t_0 \geq 0$ such that $\profile(t+T) = \profile(t)$ for all $t \geq t_0$. We show, by example, that when $\profile(0) \notin \Pre(F) \cup \Post(F)$, trajectories can enter periodic orbits.
 
 \begin{example}[Periodic Orbit]
-    Suppose four agents are connected by a ring graph, and suppose $F_i(\profile) = \bigmeet_{j \in \N_i} \pi_j$. Suppose $\profile(0) = (\pi_1,\pi_2,\pi_3,\pi_4)$ is an initial condition. Then, $\profile(k)$ has the following orbit
+    Suppose four agents are connected by a ring graph, and suppose $F_i(\profile) = \bigmeet_{j \in \N_i} \pi_j$. Suppose $\profile(0) = (\pi_1,\pi_2,\pi_3,\pi_4)$ is an initial condition. Then, $\profile(t)$ has the following orbit
     \begin{align*}
         \profile(0) &=& \left( \pi_1,\pi_2,\pi_3,\pi_4 \right), \\
         \profile(1) &=& \left( \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3 \right), \\
         \profile(2) &=& \left( \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4 \right), \\
         \vdots &&  \\
-        \profile(k) &=& \left( \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3 \right), \\
-        \profile(k+1) &=& \left( \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4 \right).
+        \profile(t) &=& \left( \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3 \right), \\
+        \profile(t+1) &=& \left( \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4 \right).
     \end{align*}
-    If $\pi_1 \meet \pi_3 \neq \pi_2 \meet \pi_4$, then the orbit is a period-$2$ cycle. We leave the reader to show that $\pi_1 \meet \pi_3 = \pi_2 \meet \pi_4$ implies $\profile(0) \in \Pre(F) \cup \Post(F)$. Hence, it the latter case, $\profile(k)$ converges to a fixed point. A similar argument applies to any ring topology with an even number of agents, or with the join operation instead of the meet.
+    If $\pi_1 \meet \pi_3 \neq \pi_2 \meet \pi_4$, then the orbit is a period-$2$ cycle. If $\pi_1 \meet \pi_3 = \pi_2 \meet \pi_4$, we leave the reader to show that $\profile(0) \in \Pre(F) \cup \Post(F)$. Hence, in the latter case, $\profile(t)$ in guaranteed to converge to a fixed point by Proposition \ref{prop:initial-conditions}. n number of agents, or with the join operation instead of the meet.
 \end{example}
 
-In this regime of periodic orbits, preferences are never settled. Instead, agents cyclicly alternate their preferences \emph{ad infinitum}. We are curious to whether such a phenomenon has been exhibited in economic or social settings.
+In this regime of periodic orbits, preferences are never settled. Instead, agents cyclicly alternate their preferences \emph{ad infinitum}. 
 
 
 \section{Experiments}
 \label{sec:experiments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+In this section, we perform a simulation of an instance of the preference dynamics model proposed in Section \ref{sec:dynamics}. First, however, we explain how we will measure convergence of the preference dynamics.
+
+\paragraph*{Metrics}
+The Kendall $\tau$-distance, defined for preference relations $\pi_1, \pi_2 \in \Pref(\A)$
+\begin{align}
+        \tau(\pi_1,\pi_2) = \big\vert \{ (a,b) : (a \prefers b) \in \pi_1, (b \prefers a) \in \pi_2  \} \big\vert \label{eq:kendall}
+    \end{align}
+is a measure of disagreement between two agents. Then, in a manner similar to the construction of a Lyapunov function of a consensus protocol, we define, given a preference profile $\profile$ and a graph $\G = (\N,\E)$, the quantity
+\begin{align}
+    \D(\profile) = \sum_{(i,j) \in \E} \tau(\pi_i,\pi_j), \label{eq:dirichlet}
+\end{align}
+which we call the \emph{Dirichlet energy}. This value represents the total disagreement between agents who are connected in $\G$. The condition $\D\bigl(\profile(t_0+t)\bigr) = \D\bigl(\profile\bigr) =$ for all $t \geq t_0$ is a necessary (but not sufficient) condition for $\profile$ being a stable preference profile. Similarly, periodic orbits in $\profile(t)$ are a necessary condition for periodicity in $\D\bigl( \profile(t)\bigr)$. On the other hand, $\D(\profile) = 0$ is a necessary and sufficient for $\profile$ being a consensus profile, i.e.~$\pi_i = \pi_j$ for all $i,j \in \N$.
+
+\paragraph*{Experimental setup}
+ Given a fixed number of agents $N=20$, we assign message $\psi$, aggregation $\Aggregate(\cdot)$, and update $\varphi$ functions to each agent. In this preliminary simulation, we set $\varphi$ and $\psi$ to be the same rule for every agent, but let $\Aggregate(\cdot)$ vary from agent to agent. In both experiments, we assume agents are truthful, i.e.~$\psi(\pi_i,\pi_j) = \pi_i$. In the first experiment, we let $\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_i \join \pi_{\mathrm{agg}}$ (agents integrate aggregate preference into their old). In the second experiment, we let $\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_{\mathrm{agg}}$ (agents accept aggregate preference). In both experiments, we let $\Aggregate(\cdot) = \Median_{r,k}(\cdot)$, and, modeling agents with different levels of stubbornness, assign different values of $r \in \{1,2,\dots,k\}$ to agents randomly. Next, we chose several initial preference profiles over the alternative set $\A = \{1,2,3,4,5\}$. Each initial profile $\profile(0)$ is given by a choice of preference relation for each agent, which, in turn, is produced by sampling possible edges, selecting each $a \prefers b$ with probability $p=0.1$, and discarding preference relations that violate transitivity. Then, we randomly generate $k$-regular graphs with nodes $\N = \{1,2,\dots,N\}$ for several values of $k$, using an algorithm introduced by \cite{kim2003}. Finally, we compute the trajectories of the preference dynamics equation \eqref{eq:global-pi} for the initial preference profiles we selected which are fixed as we run preference dynamics over each graph. Finally, we compute the Dirichlet energy \eqref{eq:dirichlet} of every preference profile in each trajectory. For the first experiment, the results for $k = 4,8$ are presented in Fig.~\ref{fig:experiment_2_4}. For the second experiment, the results for $k=2$ (a ring graph) are presented in Fig.\ref{fig:experiment_5}.
+
+ \begin{figure}
+ \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{code/plots/experiment_2_4_plot.png}
+    \caption{$k=4,8$; join update rule.}%
+    \label{fig:experiment_2_4}
+\end{subfigure}
+\begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{code/plots/experiment_6_plot.png}
+    \caption{$k=2$; posterior update rule.}%
+    \label{fig:experiment_5}
+\end{subfigure}
+\caption{Dirichlet energy $\D(\cdot)$ of trajectories with join update rule (a) or posterior update rule (b) and $r$-median aggregation rules (for random $r$). Trajectories of preference dynamics supported on $k$-regular graphs (for various $k$) with various initial profiles. }
+\end{figure}
+
+
+\paragraph*{Discussion of results}
+In the first experiment (Fig.~\ref{fig:experiment_2_4}), every trajectory converged to a stable preference profile, echoing Proposition \ref{prop:inflationary}. For each $k$, the Dirichlet energy was mostly non-increasing each round. The choice of the join update function reflected a higher level of disagreement between agents. Graphs with higher connectivity (higher $k$) generally converged faster and converged to preference profiles with higher Dirichlet energy. We were surprised that trajectories tended to cluster into stable preference profiles with a similar level of total disagreement, i.e. Dirichlet energy. Perhaps several profiles in the lattice of stable profiles (Theorem \ref{thm:complete-lattice}) have similar levels of Dirichlet energy. In the second experiment (Fig~\ref{fig:experiment_5}), period-$2$ cycles occur for every initial profile. To our surprise, while we expected cycles with different energies, the energy level between the alternating profiles of a particular cycles is relatively small.
+
 
 \section{Discussion}
 \label{sec:discussion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\paragraph*{Algorithms}
-Proposition \label{prop:initial-conditions} implies that you can compute fixed points by, first, querying initial conditions until $\boldsymbol{\pi(0)} \in \Pre(F) \cup \Post(F)$, then, computing trajectories until they converge. It is not clear if you would achieve better complexity than exhaustive search of $\Pref(\A)^N$ by this method. Is it possible to find an aribitrary fixed point in some other way? Suppose $\P = \{1,2,\dots,n\}$ with the standard order. For the product lattice $\P^d$, there is an inductive algorithm on $d$ for computing fixed points of a monotone function $f: \P^d \to \P^d$ running in $O(\log^d n)$ time \cite{?}. The base-case, finding a fixed point of $f: \P \to \P$, is equivalent to binary search: Initialize $m = \lceil n/2 \rceil$. If $f(m) < m$, restrict $f$ to $f: \{1,2,\dots,m-1\} \to \{1,2,\dots,m-1\}$. If $f(m) > m$, restrict $f$ to $f: \{m+1,m+2,\dots,n\} \to \{m+1,m+2,\dots,n\}$. Otherwise, $f(m) = m$ and you are done. An analogous inductive algorithm is not possible, in our case, because, in the base case $f: \Pref(\A) \to \Pref(\A)$, the binary search method would require the information order on $\Pref(\A)$ to be a chain, i.e.~totally ordered. To the best of our knowledge, there are no algorithms for computing fixed points of finite lattices, in general, besides exhaustive search.
+\paragraph*{Fixed point algorithms}x
+Proposition \ref{prop:initial-conditions} implies that you can compute fixed points by, first, querying initial conditions until $\boldsymbol{\pi(0)} \in \Pre(F) \cup \Post(F)$, then, computing trajectories until they converge. It is not clear if you would achieve better complexity than exhaustive search of $\Pref(\A)^N$ by this method. Is it possible to find an aribitrary fixed point in some other way? Suppose $\P = \{1,2,\dots,n\}$ with the standard order. For the product lattice $\P^d$, there is an inductive algorithm on $d$ for computing fixed points of a monotone function $f: \P^d \to \P^d$ running in $O(\log^d n)$ time \cite{?}. The base-case, finding a fixed point of $f: \P \to \P$, is equivalent to binary search: Initialize $m = \lceil n/2 \rceil$. If $f(m) < m$, restrict $f$ to $\{1,2,\dots,m-1\}$. If $f(m) > m$, restrict $f$ to $\{m+1,m+2,\dots,n\}$. Otherwise, $f(m) = m$ and you are done. In our case, a similar inductive algorithm is not possible, because, in the base case $f: \Pref(\A) \to \Pref(\A)$, the binary search method would require the information order on $\Pref(\A)$ to be a chain, i.e.~totally ordered. To the best of our knowledge, there are no algorithms for computing fixed points of finite lattices, in general, besides exhaustive search.
 
 \paragraph*{Metapreferences}
 Suppose we are able to call to an oracle that produces an arbitrary fixed point, i.e.~a stable preference profile. Is this preference profile desirable? In future work, we want to prune the set of preferences in such a away that stable preferences are acceptable to human supervisors. Critical in this line of reasoning is the notion of a \emph{metapreference},  or higher-order preference, a notion of a preference over preferences. Formally, an arbitrary ordering on a set of preferences \cite{lutskanov2015}, a narrower class of metapreferences can be represented by utility functions on a set of preference relations, which can be interpreted as measuring the cost or benefit of a preference to the agent as well as the supervisor \cite{munger2019}. Utility functions representing a given metapreferene relation are not unique, i.e.~utility functions capture more than the relative order of preferences. The values of metapreference utilities reflect the degree to which adding additional relations $a \prefers b$ will increase or decrease utility. If every agent has a utility function specifying the cost or benefit of holding every possible preference, maximizing
@@ -529,19 +568,8 @@ is equivalent to finding the preference profile that is the most acceptable to t
 
 
 
-\paragraph*{Switching Topology}
-We assumed that the topology is fixed so that agents interact with the same set of neighbors in each round. We want to relax this assumption so that we can model preference dynamics in systems with more complex patterns of interaction. Suppose the topology of the network is not fixed, and switches according to $\G(k) = \left(\N, \E(k)\right)$. If agents update preferences according to a heterogeneous but fixed-in-time message-passing schema \eqref{eq:message-passing}, then the global dynamics $\profile(k+1) = F_k\left( \profile(k)\right)$ is now a time-variant system.
-% \begin{align*}
-%         \mathcal{S} = \{ \profile \in \Pref(\A)^N: \exists k_0 \geq 0,~\profile(k) = \profile~\forall~k \geq k_0 \}.
-% \end{align*}
-While it is clear that the time-invariant solutions can be identified as intersections and unions of $\{\Fix(F_k)\}_{k = 0}^{\infty}$, these solutions no longer have the structure of a lattice (Theorem \ref{thm:dynamics}), in general. Furthermore, it is not clear what constraints on the connectedness of $\G(t)$ need to be imposed in order to guarantee  non-emptiness of $\SS$ or other desirable properties.
-% \begin{proposition}
-%     Suppose $F_k: \Pref(\A)^N \to \Pref(\A)^N$ is monotone for all $k \geq 0$. If $\profile(k+1) = F_k\left( \profile(k)\right)$, then the time-invariant solutions are
-%     \begin{align*}
-%         \SS = \bigcup_{k_0 \geq 0} \bigcap_{k \geq k_0} \Fix(F_k)
-%     \end{align*}
-% \end{proposition}
-
+\paragraph*{Switching topology}
+We assumed that the topology is fixed so that agents interact with the same set of neighbors in each round. We want to relax this assumption so that we can model preference dynamics in systems with more complex patterns of interaction. Suppose the topology of the network is not fixed, and switches according to $\G(t) = \left(\N, \E(t)\right)$. If agents update preferences according to a heterogeneous but fixed-in-time message-passing schema \eqref{eq:message-passing}, then the global dynamics $\profile(t+1) = F_t\left( \profile(t)\right)$ is now a time-variant system. While it is clear that the time-invariant solutions can be identified as intersections and unions of $\{\Fix(F_t)\}_{t = 0}^{\infty}$, these solutions no longer have the structure of a lattice (Theorem \ref{thm:dynamics}), in general. Furthermore, it is not clear what constraints on the connectedness of $\G(t)$ need to be imposed in order to guarantee  non-emptiness of $\SS$ or other desirable properties.
 
 \bibliographystyle{ieeetr}
 \bibliography{IEEEabrv,biblio}
@@ -550,7 +578,8 @@ While it is clear that the time-invariant solutions can be identified as interse
 
 \subsection*{Proof of Theorem \ref{thm:complete-lattice}}
 
-\subsection*{Proof of Proposition \ref{prop:join}}
+% \subsection*{Proof of Proposition \ref{prop:join}}
+
 
 
 

@@ -1,7 +1,7 @@
 from networkx import DiGraph,Graph
 from networkx import transitive_closure,transitive_reduction,compose,neighbors,is_directed_acyclic_graph,has_path,dfs_preorder_nodes,random_tree
-from random import shuffle,sample,seed,choice
-from numpy.random import rand
+from random import shuffle,sample,choice
+from numpy.random import rand,seed
 from itertools import permutations
 
 def reflexive_closure(digraph):
@@ -24,8 +24,10 @@ def intersection(digraph_1,digraph_2):
             digraph.add_edge(*edge)
     return digraph
 
-def generate_random_preorder(n_nodes, edge_prob):
+def generate_random_preorder(n_nodes, edge_prob,n_seed=None):
     # Step 1: Generate a random DAG
+    if n_seed!=None:
+        seed(n_seed)
     digraph = DiGraph()
     digraph.add_nodes_from(range(n_nodes))
     

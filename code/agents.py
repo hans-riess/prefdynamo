@@ -4,8 +4,7 @@ from functools import reduce
 from itertools import combinations
 from networkx import draw_networkx_nodes,draw_networkx_edges,draw_networkx_labels,draw_networkx_edge_labels,circular_layout
 import matplotlib.pyplot as plt
-from numpy import zeros
-from concurrent.futures import ProcessPoolExecutor
+from numpy import zeros,amax,amin
 import copy
 
 class Preference(DiGraph):
@@ -111,24 +110,14 @@ class SocialNetwork:
             new_agent_dict[node] = Agent(self.update_preference(node),self.agent_dict[node].r_median,self.agent_dict[node].update_rule)
         self.agent_dict = new_agent_dict.copy()
     
-    def kemeny_score(self):
-        #NOT WORKING
-        score_dict = {}
-        for node in self.graph.nodes():
-            score = 0
-            agent_list = [self.agent_dict[j] for j in self.graph.neighbors(node)]
-            for neighbor_agent in agent_list:
-                score+=neighbor_agent.preference.tau_distance(self.update_preference(node))
-            score_dict[node] = score
-    
     def get_digraph(self,node,option=None):
         digraph = self.graph.nodes[node]['agent'].preference.digraph
         if option == 'clean':
             return clean_digraph(digraph)
         else:
             return digraph
-    
-    def distance_matrix(self):
+
+    def distance_matrix(self,normalized=False):
         distance_matrix = zeros([self.n_agents, self.n_agents])
         nodes = list(self.graph.nodes())
         for i, node_i in enumerate(nodes):
@@ -137,10 +126,20 @@ class SocialNetwork:
                     try:
                         distance_matrix[i, j] = self.agent_dict[node_i].preference.tau_distance(self.agent_dict[node_j].preference)
                     except KeyError:
-                        # Handle the error, e.g., by setting distance to a default value or printing an error message
                         print(f"Error: Missing keys {node_i} or {node_j} in agent_dict.")
-        return distance_matrix
+        # Normalizing the distance matrix
+        min_val = amin(distance_matrix)
+        max_val = amax(distance_matrix)
+        range_val = max_val - min_val
+        if range_val != 0:  # To avoid division by zero
+            normalized_distance_matrix = (distance_matrix - min_val) / range_val
+        else:
+            normalized_distance_matrix = distance_matrix - min_val
 
+        if normalized == False:
+            return distance_matrix
+        if normalized == True:
+            return normalized_distance_matrix
         
     def copy(self):
         new_graph = self.graph.copy()

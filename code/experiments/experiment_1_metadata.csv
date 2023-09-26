@@ -1,0 +1,14 @@
+data,variable
+date,2023-09-26
+experiment_description,"random initial profiles, fixed regular graph, fixed random r_values, join updates"
+n_seed,29
+n_trials,10
+n_iterations,16
+n_agents,20
+n_neighbors,2
+n_alternatives,5
+p_preference,0.1
+r_values,"[2, 1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 1, 1]"
+update_rules,"['join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join', 'join']"
+graph,"[(3, 10), (3, 1), (10, 15), (4, 15), (4, 19), (8, 9), (8, 16), (9, 1), (2, 11), (2, 18), (11, 13), (5, 12), (5, 17), (12, 14), (0, 7), (0, 6), (7, 14), (13, 6), (16, 18), (19, 17)]"
+energy_method,sum
