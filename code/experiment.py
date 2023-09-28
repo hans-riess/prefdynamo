@@ -10,10 +10,10 @@ import os
 
 #initial data for problem
 
-experiment_number = 6
+experiment_number = 5
 path = 'experiments/' + 'experiment_' + str(experiment_number) + '/'
 os.mkdir(path)
-experiment_description = 'random initial profiles, fixed regular graph, join update, r median, distance matrices at each t recorded'
+experiment_description = 'random initial profiles, fixed regular graph, join update, r median, distance matrices at each t recorded, normalized by number of edges'
 date = datetime.now().strftime('%Y-%m-%d')
 n_seed = 29
 n_trials = 10
@@ -90,7 +90,7 @@ for trial in range(n_trials):
         if energy_method == 'max':
             loss = np.max(network.distance_matrix())
         print('loss = ' +str(loss))
-        losses[trial,t] = loss
+        losses[trial,t] = 1/(len(graph.edges))*loss
         #update preference profile
         network.update_preference_profile()
     print('Done! \n')

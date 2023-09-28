@@ -312,7 +312,7 @@ For a pair, $\pi_1 \meet \pi_2 = \pi_1 \cap \pi_2$ and $\pi_1 \join \pi_2 = \lef
     such that $\left( c_{m-1} \prefers_{{j_m}} c_{m} \right) \in \pi_1 \Delta \pi_2$ (symmetric difference).
 \end{proposition}
 \begin{proof}
-    See Appendix.
+    \textcolor{red}{\bf [TO DO]: write!}
 \end{proof}
 
 Thus, the join of two preference relations facilitates the rational, i.e.~transitive, conclusion of two agents having merged their preferences.
@@ -432,20 +432,18 @@ Suppose $F = (F_1,F_2,\dots,F_N)$ is given. i.e.~$F: \Pref(\A)^N \to \Pref(\A)^N
 \end{align}
 system are collected in the following set
 \begin{align*}
-    \SS = \{\profile \in \Pref(\A)^N : \exists t_0 \geq 0, \profile(t) = \profile~\forall t \geq t_0\}.
+    \SS = \{\profile \in \Pref(\A)^N : F(\profile) = \profile \},
 \end{align*}
-In order to utilize the algebraic structure of preference profiles to study the equilibrium point of the system, we impose some constraints on $F$. \textcolor{red}{Should just be fixed points!!!}
+precisely the fixed points of $F$. In order to utilize the algebraic structure of preference profiles to study the equilibrium points of the system \eqref{eq:global-pi}, we impose constraints on the iterative map $F$.
 
-Suppose $F$ is monotone. Then, $\profile \preceq \profile'$ (i.e. $\pi_i \preceq \pi_i'$ for ever $i \in N$) implies $F_i(\profile) \preceq F_i(\profile')$. Hence, if every agent reveals more preferences, then the result of message-passing, aggregating and updating preference can only reveal more preferences. The message-passing framework of Section \ref{sec:dynamics} produces a monotone $F_i$ if the message-passing, aggregate, and update functions are monotone, in particular, if these functions are lattice polynomials.
+Recall, if $F$ is monotone, then $\pi_i \preceq \pi_i'$ for all $i \in \N$ implies $F_i(\profile) \preceq F_i(\profile')$ for all $i \in N$. An interpretation is in order: if agents were to reveal more preferences, but do not remove existing ones, then the result of message-passing, aggregating and updating preferences \eqref{eq:message-passing} can only result in comparing more alternatives.
 
 \begin{lemma} \label{lem:message-passing}
-    Suppose, in \eqref{eq:message-passing}, the maps $\psi$, $\Aggregate(\cdot)$ and $\varphi$ are lattice polynomials for every $i \in \N$. Then, $F$ is monotone.
+    Suppose the maps $\psi$, $\Aggregate(\cdot)$ and $\varphi$ which compose in obtain a ma map $F_i: \Pref(\A)^N \to \Pref(\A)$ of the form \eqref{eq:message-passing} are lattice polynomials. Then, $F_i$ is monotone.
 \end{lemma}
 \begin{proof}
-    By Lemma \ref{lem:lattice-polynomial} and the observation that the composition and product $f = (f_1,f_2)$ of monotone functions is monotone.
+    By Lemma \ref{lem:lattice-polynomial} and the observation that the composition of monotone functions is monotone.
 \end{proof}
-
-% Recall, a complete lattice is a lattice $\L$ such that arbitrary meets $\bigjoin U$ and $\bigmeet U$ exist for every $U \subseteq \L$. 
 
 We recall a theorem equipping fixed points with a lattice structure.
 \begin{lemma}[Tarski Fixed Point Theorem \cite{tarski1955}] \label{lem:tfpt}
@@ -455,53 +453,51 @@ We recall a theorem equipping fixed points with a lattice structure.
     See \cite[Theorem 12.2]{roman2008}. 
 \end{proof}
 
-The Tarski Fixed Point Theorem directly implies the following result which characterizes the equilibrium points of the global dynamics
+As a remark, the Lemma \ref{lem:tfpt} implies, also, that a greatest and least fixed point exist. Furthermore, Lemma \ref{lem:tfpt} directly implies the following result which characterizes the equilibrium points of the global dynamics
+
 \begin{theorem} \label{thm:dynamics}
-    Suppose $F$ is monotone. Then, $\SS$ forms a complete lattice.
+    Suppose $F$, in the preference dynamics \eqref{eq:global-pi}, is monotone. Then, $\SS$ forms a complete lattice.
 \end{theorem}
 \begin{proof}
-    Clearly, $\SS = \Fix(F)$. By Theorem \ref{thm:complete-lattice}, $\Pref(\A)$ is complete. It follows that the product $\Pref(\A)^N$ is complete. Apply Lemma \ref{lem:tfpt}.
+    By Theorem \ref{thm:complete-lattice}, $\Pref(\A)$ is complete. It follows that $\Pref(\A)^N$ is complete. Apply Lemma \ref{lem:tfpt}.
 \end{proof}
 
-Together with Lemma \ref{lem:message-passing}, Theorem \ref{thm:dynamics} implies that there exist stable preference profiles of the model we proposed in Section \ref{sec:dynamics}. Thus, equilibrium points of preference dynamics exist, although are not, in general, unique. However, by virtue of the fixed points forming a lattice, there exist unique greatest and least least equilibrium points with respect to the product information order. The greatest (resp.~least) equilibrium point is the stable preference profile with the most (resp.~least) alternatives compared. More generally, the meet and join of stable preference profiles exist: if $\profile, \profile'$ are stable preference profiles, there is a largest \emph{stable} preference profile $\profile \meet_{\SS} \profile'$ contained by both $\profile$ and $\profile'$. There also exist a smallest \emph{stable} preference profile $\profile \join_{\SS} \profile'$ containing both $\profile$ and $\profile'$. As a point of warning, the operations $\meet_\SS$ and $\join_S$ do not necessarily coincide with $\meet$ and $\join$ in $\Pref(\A)^N$, given by the lattice operations on the product order.
+Thus, equilibrium points of preference dynamics exist, although are not, in general, unique. However, by virtue of the fixed points forming a lattice, there exist unique greatest and least least equilibrium points with respect to the product information order. The greatest (resp.~least) equilibrium point is the stable preference profile with the most (resp.~least) alternatives compared. More generally, the meet and join of stable preference profiles exist: if $\profile, \profile'$ are stable preference profiles, there is a largest \emph{stable} preference profile $\profile \meet_{\SS} \profile'$ contained by both $\profile$ and $\profile'$. There also exist a smallest \emph{stable} preference profile $\profile \join_{\SS} \profile'$ containing both $\profile$ and $\profile'$. As a point of warning, the operations $\meet_\SS$ and $\join_S$ do not necessarily coincide with $\meet$ and $\join$ in $\Pref(\A)^N$, given by the lattice operations on the product order.
 
+Theorem \ref{thm:dynamics}, together with Lemma \ref{lem:message-passing}, implies that there exist stable preference profiles under the model we proposed in Section \ref{sec:dynamics}.
+
+\begin{corollary} \label{cor:dynamics}
+    Suppose $F = (F_1,F_2,\dots,F_N)$, $F_i$ is of the form \eqref{eq:message-passing}, and $\psi$, $\Aggregate(\cdot)$, and $\varphi$ are lattice polynomials. Then, $\SS$ is a complete lattice.
+\end{corollary}
 
 \subsection{Computing Equilibrium Points}
 
-Theorem \ref{thm:dynamics} not provide an algorithm to compute stable preference profiles, it only guarantees their existence. We examine initial preference profiles for which trajectories of \eqref{eq:global-pi} converge to stable preference profiles. \textcolor{red}{What are REAL interesting cases that they conditions are not obvious and worth writing a paper about!}
+It is well-known that the Tarski Fixed Point Theorem (Lemma \ref{lem:tfpt}), and thus Theorem \ref{thm:dynamics}, does not provide an algorithm to compute stable preference profiles, it only guarantees their existence. In the remainder of this section, we consider iterative maps $F$ which guarantee the convergence of $\profile(0)$ to some stable preference profile $\pi \in \SS$.
 
-\begin{proposition} \label{prop:initial-conditions}
-    Suppose $\A$ is finite, $F$ is monotone, and $\profile(0) \in \Pre(F) \cup \Post(F)$. Then, $\profile(t)$ converges to an equilibrium point in a finite number of iterations for every initial profile $\profile(0) \in \Pref(\A)^N$.
+\begin{proposition} \label{prop:monotone-inflationary}
+    Suppose $\A$ is finite, $F$ is monotone, and either (i) $F$ is inflationary or (ii) $F$ is deflationary. Then, $\profile(t)$ converges to an equilibrium point in a finite number of iterations for every initial profile $\profile(0) \in \Pref(\A)^N$.
 \end{proposition}
 \begin{proof}
-    We show the first case. Suppose $\profile(0) \in \Pre(F)$. Then, by monotonicity, $F(\profile(0)) \preceq F\left( F(\profile(0))\right)$. Continuing in this way implies
+    We show the monotone-inflationary case. For every $\profile(0)$, $F$ being inflationary implies $F(\profile(0)) \succeq \profile(0)$. By monotonicity, applying $F$ again, $F\left( F(\profile(0))\right) \succeq F(\profile(0))$, and, continuing to apply $F$, along with transitivity of $(\Pre(\A),\succeq)$ implies 
     \begin{align}
-        F^{t+1}\left( \profile(0)\right)  = \profile(t+1) \preceq \profile(t) \preceq \cdots \preceq \profile(0) \label{eq:chain}
-    \end{align} For each step in the chain, either $\profile(t+1) \prec \profile(t)$, or $\profile(t+1) = \profile(t)$, in which case $\profile(t) \in \Fix(F)$. Because $\A$ is finite, $\Pref(\A)$ is finite, which implies every chain is finite. Thus, the \eqref{eq:chain} either converges to the trivial preference profile, $\boldsymbol{\epsilon}$, which, then, is necessarily a fixed point, or otherwise converges to another fixed point, the preference at which the decreasing chain terminates.
+        F^{t+1}\left( \profile(0)\right)  = \profile(t+1) \succeq \profile(t) \succeq \cdots \succeq \profile(0) \label{eq:chain}
+    \end{align} For each link in the chain, either $\profile(t+1) \succ \profile(t)$, or $\profile(t+1) = \profile(t)$, in which case $\profile(t) \in \Fix(F)$. Because $\A$ is finite, $\Pref(\A)$ is finite, which implies every chain is finite. Thus, \eqref{eq:chain} either converges to the trivial preference profile, $\boldsymbol{\epsilon}$, which, then, is necessarily a fixed point, or otherwise converges to some other fixed point, the preference at which the non-decreasing chain terminates.
 \end{proof}
 
-\textcolor{red}{Need an interesting discussion on the initial condition in Proposition \ref{prop:initial-conditions}.}
+An inflationary (resp.~deflationary) iterative map $F$ implies that $\profile(t+1)$ can only contain more (resp.~less) comparisons than $\profile(t)$. Recall, the choice of join (resp.~meet) updates, $\varphi(\pi,\pi_{\text{agg}}) = \pi \join \pi_{\text{agg}}$ (resp.~$\varphi(\pi,\pi_{\text{agg}}) = \pi \meet \pi_{\text{agg}}$) satisfy the inflationary (resp.~deflationary) condition locally. If either every agent employs the join update rule or the meet update rule, the conditions of Proposition \ref{prop:monotone-inflationary} are satisfied as, for lattices in general, $\pi_1 \join \pi_2 \succeq \pi_1$ and $\pi_1 \meet \pi_2 \preceq \pi_1$. While it is no longer the case that $\Fix(F)$ forms a complete lattice (in general), it is possible, but technical, to show that trajectories converge to a stable preference profile if $F$ is inflationary and not (necessarily) monotone.
 
-% While the conditions on Proposition \ref{prop:initial-conditions} are rather stringent, the minimum and maximum preference profile are guaranteed to satisfy the condition. Moreover, trajectories with these initial conditions converge to the minimum and maximum stable preference profiles. \textcolor{red}{Recall what minimum and maximum proflies are and how this is relevant! Connect notion with terminology.}
-
-% \begin{corollary}
-%     Suppose $\A$ is finite, and suppose $\profile(0) = \boldsymbol{\epsilon}$ or $\boldsymbol{\iota}$. Then, $\profile(t)$ converges to $\lfp(F)$ and $\gfp(F)$, respectively.
-% \end{corollary}
-
-On the other hand, if $F$ is deflationary or inflationary (not necessarily monotone), then updates will only reveal more comparisons, or prune the set of comparisons, respectively. For instance, the choice of the update function $\varphi(\pi,\pi_{\text{agg}}) = \pi \meet \pi_{\text{agg}}$ for every $i \in \N$ will result in a deflationary $F$, while the choice of the update function 
-$\varphi(\pi,\pi_{\text{agg}}) = \pi \join \pi_{\text{agg}}$ will result in an inflationary $F$. Either of these properties is sufficient for arbitrary trajectories to converge to fixed points.
 
 \begin{proposition} \label{prop:inflationary}
-     Suppose $\A$ is a finite, and suppose $F$ is deflationary or inflationary. Then, $\profile(t)$ converges to a equilibrium point in a finite number of iterations.
+     Suppose $\A$ is a finite, and suppose $F$ is either inflationary or deflationary. Then, $\profile(t)$ converges to a equilibrium point in a finite number of iterations.
 \end{proposition}
 \begin{proof}
-    The case that $F$ is monotone and deflationary follows directly from Proposition \ref{prop:initial-conditions}. In $F$ is not monotone, apply \cite[Theorem 12.19]{roman2008}. \textcolor{red}{Need to provide the lemma.}
+See Appendix.
 \end{proof}
 
 \textcolor{red}{}
 
 \subsection{Periodic Orbits}
-When trajectories do not converge to stable profiles, they can exhibit periodic behavior. We say an orbit is periodic if there is $T>0$ and a $t_0 \geq 0$ such that $\profile(t+T) = \profile(t)$ for all $t \geq t_0$. We show, by example, that when $\profile(0) \notin \Pre(F) \cup \Post(F)$, trajectories can enter periodic orbits.
+If $F$ is neither inflationary nor deflationary, then trajectories may exhibit periodic behavior. We say an orbit is \emph{periodic} with period $T$ if there is $T>0$ and a $t_0 \geq 0$ such that $\profile(t+T) = \profile(t)$ for all $t \geq t_0$. In this regime of periodic orbits, preferences are never settled. Instead, agents oscillate between several different preferences \emph{ad infinitum} as illustrated by the following example.
 
 \begin{example}[Periodic Orbit]
     Suppose four agents are connected by a ring graph, and suppose $F_i(\profile) = \bigmeet_{j \in \N_i} \pi_j$. Suppose $\profile(0) = (\pi_1,\pi_2,\pi_3,\pi_4)$ is an initial condition. Then, $\profile(t)$ has the following orbit
@@ -513,66 +509,60 @@ When trajectories do not converge to stable profiles, they can exhibit periodic 
         \profile(t) &=& \left( \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3 \right), \\
         \profile(t+1) &=& \left( \pi_1 \meet \pi_3, \pi_2 \meet \pi_4, \pi_1 \meet \pi_3, \pi_2 \meet \pi_4 \right).
     \end{align*}
-    If $\pi_1 \meet \pi_3 \neq \pi_2 \meet \pi_4$, then the orbit is a period-$2$ cycle. If $\pi_1 \meet \pi_3 = \pi_2 \meet \pi_4$, we leave the reader to show that $\profile(0) \in \Pre(F) \cup \Post(F)$. Hence, in the latter case, $\profile(t)$ in guaranteed to converge to a fixed point by Proposition \ref{prop:initial-conditions}. n number of agents, or with the join operation instead of the meet.
+    If $\pi_1 \meet \pi_3 \neq \pi_2 \meet \pi_4$, then the orbit is a periodic orbit with period $2$.
 \end{example}
 
-In this regime of periodic orbits, preferences are never settled. Instead, agents cyclicly alternate their preferences \emph{ad infinitum}. 
 
 
 \section{Experiments}
 \label{sec:experiments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this section, we perform a simulation of an instance of the preference dynamics model proposed in Section \ref{sec:dynamics}. First, however, we explain how we will measure convergence of the preference dynamics.
-
-\paragraph*{Metrics}
-The Kendall $\tau$-distance, defined for preference relations $\pi_1, \pi_2 \in \Pref(\A)$
+In this section, we perform a simulation of a preference dynamics model proposed in Section \ref{sec:dynamics} and validate our theoretical findings of Section \ref{sec:stable}. We measure the convergence of preference profiles to equilibria with the \emph{Kendall tau distance}, defined
 \begin{align}
-        \tau(\pi_1,\pi_2) = \big\vert \{ (a,b) : (a \prefers b) \in \pi_1, (b \prefers a) \in \pi_2  \} \big\vert \label{eq:kendall}
+        \tau(\pi_1,\pi_2) =  \#\{ (a,b) : (a \prefers b) \in \pi_1, (b \prefers a) \in \pi_2  \} \label{eq:kendall}
     \end{align}
-is a measure of disagreement between two agents.
-\textcolor{red}{}
-Then, we define, given a preference profile $\profile$ and a graph $\G = (\N,\E)$, the quantity \textcolor{red}{\bf [TODO]: normalize with respect to total number of edges?}
+for preference relations $\pi_1, \pi_2 \in \Pref(\A)$. This distance is a measure of disagreement between two agents, where agents are said to disagree if they hold opposite comparisons. Note this notion of distance between preference relations does \emph{not} reflect agreement, only disagreement or lack thereof. Given a preference profile $\profile$ and a graph $\G = (\N,\E)$, consider the quantity
 \begin{align}
     \D(\profile) = \sum_{(i,j) \in \E} \tau(\pi_i,\pi_j). \label{eq:dirichlet}
 \end{align}
-Because the dynamical system \eqref{eq:global-pi} resembles a diffusion process, we boil the term Dirichlet energy to refer to the quantity $\D(\cdot)$ in \eqref{eq:dirichlet}. The Dirichlet energy quantifies the total disagreement between agents who are connected in $\G$. The condition $\D\bigl(\profile(t_0+t)\bigr) = \D\bigl(\profile\bigr)$ for all $t \geq t_0$ is a necessary (but not sufficient) condition for $\profile$ being a stable preference profile. Similarly, periodic orbits in $\profile(t)$ are a necessary condition for periodicity in $\D\bigl( \profile(t)\bigr)$. 
+Because the dynamical system \eqref{eq:global-pi} resembles a diffusion process, we instill the term \emph{Dirichlet energy} to refer to the quantity $\D(\cdot)$ in \eqref{eq:dirichlet}. The Dirichlet energy quantifies the total disagreement between agents who are connected in $\G$. 
 
 \paragraph*{Experimental setup}
- Fixing the number of agents ($N=20$, $N=10$), we assign message $\psi$, aggregation $\Aggregate(\cdot)$, and update $\varphi$ functions to each one. In our experiment, we set $\varphi$ and $\psi$ to be the same rule for every agent, but let $\Aggregate(\cdot)$ vary from agent to agent. We assume agents are truthful, i.e.~$\psi(\pi_i,\pi_j) = \pi_i$, and we assume agents update via the join operation, i.e.~$\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_i \join \pi_{\mathrm{agg}}$. We let $\Aggregate(\cdot) = \Median_{r,k}(\cdot)$, and, modeling agents with different levels of stubbornness, assign different values of $r \in \{1,2,\dots,k\}$ to agents randomly. Next, we chose several initial preference profiles over the alternative set $\A = \{1,2,3,4,5\}$. Each initial profile $\profile(0)$ is given by a choice of preference relation for each agent, which, in turn, is produced by sampling possible edges, selecting each $a \prefers b$ with probability $p$, and discarding preference relations that violate transitivity. Then, we randomly generate $k$-regular graphs with nodes $\N = \{1,2,\dots,N\}$ for several values of $k$, using an algorithm introduced by \cite{kim2003}. Finally, we compute the trajectories of the preference dynamics equation \eqref{eq:global-pi} for the initial preference profiles we selected which are fixed as we run preference dynamics over each graph. Finally, we compute the Dirichlet energy \eqref{eq:dirichlet} of every preference profile in each trajectory.
+ Fixing the number of agents, we assign message $\psi$, aggregation $\Aggregate(\cdot)$, and update $\varphi$ functions to each one. In our experiment, we set $\varphi$ and $\psi$ to be the same rule for every agent, but let $\Aggregate(\cdot)$ vary from agent to agent. We assume agents are truthful, i.e.~$\psi(\pi_i,\pi_j) = \pi_i$, and we assume agents update via the join operation, i.e.~$\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_i \join \pi_{\mathrm{agg}}$. We let $\Aggregate(\cdot) = \Median_{r,k}(\cdot)$, and, modeling agents with different levels of stubbornness, assign different values of $r \in \{1,2,\dots,k\}$ to agents randomly. Next, we chose several initial preference profiles over the alternative set $\A = \{1,2,3,4,5\}$. Each initial profile $\profile(0)$ is given by a choice of preference relation for each agent, which, in turn, is produced by sampling possible edges, selecting each $a \prefers b$ with probability $p$, and discarding preference relations that violate transitivity. Then, we randomly generate $k$-regular graphs with nodes $\N = \{1,2,\dots,N\}$ for several values of $k$, using an algorithm introduced by \cite{kim2003}. Next, we compute the trajectories of the preference dynamics equation \eqref{eq:global-pi} for the initial preference profiles we selected. Finally, we compute the Dirichlet energy \eqref{eq:dirichlet} of every preference profile in each trajectory.
 
  \begin{figure}
     \centering
     \includegraphics[width=0.5\textwidth]{code/figs/fig1.png}
-    \caption{Dirichlet energy $\D(\cdot)$ of trajectories with join update rule and $r$-median aggregation rules (for random $r$). Trajectories of preference dynamics supported on $k$-regular graphs (f$k=4,8$) with various initial profiles.}
-    \label{fig:experiment_2_4}
+    \caption{Dirichlet energy $\D(\cdot)$ of trajectories with join update rule and $r$-median aggregation rules (for random $r$). Trajectories of preference dynamics supported on $k$-regular graphs ($k=4,8$) with various initial profiles.}
+    \label{fig:1}
 \end{figure}
 
 
 \paragraph*{Discussion of results}
-\textcolor{red}{By increasing consensus within coalitions, are we decreasing consensus across coalitions.}
+In the first experiment, we considered $N=20$ agents and compared the convergence of their preference profiles for various $k$-regular graphs. The Dirichlet energy for two such graphs ($k=4,8$) are plotted in Fig.~\ref{fig:1}. As expected, because $F$ constructed from the above message, aggregation, and update functions is monotone and inflationary, every trajectory converged to a stable preference profile (Proposition \ref{prop:monotone-inflationary}). We make some additional observations. The Dirichlet energy, for every trajectory, was always non-decreasing. This reflects a greater level of disagreement each round. We also observed that graphs with higher connectivity converged faster and the total level of disagreement (energy) was higher. While it may seem surprising that greater connectivity fosters greater disagreement, this is a byproduct of the choice of update function. With the join update, we will never remove comparisons, hence, by integrating more comparisons by communicating with more agents, we see the higher level of disagreement in the steady state. It would be interesting to compare systems with a join rule versus systems with agents having various update rules. We were also surprised that trajectories tended to cluster into stable preference profiles with a similar level of total disagreement. One possible explanation for this could be that several profiles in the lattice of stable profiles (Theorem \ref{thm:complete-lattice}) have similar levels of Dirichlet energy.
+% In the second experiment (Fig~\ref{fig:experiment_5}), period-$2$ cycles occur for every initial profile. To our surprise, while we expected cycles with different energies, the energy level between the alternating profiles of a particular cycles is relatively small.
 
-In the first experiment (Fig.~\ref{fig:experiment_2_4}), every trajectory converged to a stable preference profile, echoing Proposition \ref{prop:inflationary}. For each $k$, the Dirichlet energy was mostly non-increasing each round. The choice of the join update function reflected a higher level of disagreement between agents. Graphs with higher connectivity (higher $k$) generally converged faster and converged to preference profiles with higher Dirichlet energy. We were surprised that trajectories tended to cluster into stable preference profiles with a similar level of total disagreement, i.e. Dirichlet energy. Perhaps several profiles in the lattice of stable profiles (Theorem \ref{thm:complete-lattice}) have similar levels of Dirichlet energy. In the second experiment (Fig~\ref{fig:experiment_5}), period-$2$ cycles occur for every initial profile. To our surprise, while we expected cycles with different energies, the energy level between the alternating profiles of a particular cycles is relatively small.
+\begin{figure*}[h]
+    \begin{subfigure}[b]{0.6\textwidth}
+    \includegraphics[width=\textwidth]{code/figs/fig2.png}
+    \caption{}
+    \label{fig:2a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{code/figs/fig2b.png}
+    \caption{}
+    \label{fig:2b}
+    \end{subfigure}
+    \caption{On a $k$-regular graph ($k=4$) with $N$ nodes ($N=10$) with a randomly-selected initial preference profile, we plot (a) the Kenall tau distance $\tau(\pi_i(t),\pi_j(t))$ for every $(i,j) \in \E$ for both $t=0$ (initial disagreement) and $t=15$ (final disagreement) with a heat-map on the edges of the graph. We also plot (b) the Dirichlet energy of the trajectory (black) as well as the energies of other trajectories from different initial conditions (blues).}
+    \label{fig:2}
+\end{figure*}
+
+While the Dirichlet energy is a good proxy to show trajectories converge, we further examined, in our second experiment, the difference between initial preference profiles and the stable preference profile they converge to. An example for a small graph (for visual ease) is presented in Fig.~\ref{fig:2}. We observe that it is possible for a pair of agents (edge) with no disagreement to converge to preference relations with a high level of disagreement. It is also possible for a pair of agreements to initially disagree to a certain extent and not disagree more in later rounds. However, in our examination of several different graphs, distributions of $r$-medians, and initial conditions, we found that disagreement between agents over an edge can only increase over rounds.
 
 
-% \section{Discussion}
-% \label{sec:discussion}
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \paragraph*{Fixed point algorithms}x
-% Proposition \ref{prop:initial-conditions} implies that you can compute fixed points by, first, querying initial conditions until $\boldsymbol{\pi(0)} \in \Pre(F) \cup \Post(F)$, then, computing trajectories until they converge. It is not clear if you would achieve better complexity than exhaustive search of $\Pref(\A)^N$ by this method. Is it possible to find an aribitrary fixed point in some other way? Suppose $\P = \{1,2,\dots,n\}$ with the standard order. For the product lattice $\P^d$, there is an inductive algorithm on $d$ for computing fixed points of a monotone function $f: \P^d \to \P^d$ running in $O(\log^d n)$ time \cite{?}. The base-case, finding a fixed point of $f: \P \to \P$, is equivalent to binary search: Initialize $m = \lceil n/2 \rceil$. If $f(m) < m$, restrict $f$ to $\{1,2,\dots,m-1\}$. If $f(m) > m$, restrict $f$ to $\{m+1,m+2,\dots,n\}$. Otherwise, $f(m) = m$ and you are done. In our case, a similar inductive algorithm is not possible, because, in the base case $f: \Pref(\A) \to \Pref(\A)$, the binary search method would require the information order on $\Pref(\A)$ to be a chain, i.e.~totally ordered. To the best of our knowledge, there are no algorithms for computing fixed points of finite lattices, in general, besides exhaustive search.
-
-% \paragraph*{Metapreferences}
-% Suppose we are able to call to an oracle that produces an arbitrary fixed point, i.e.~a stable preference profile. Is this preference profile desirable? In future work, we want to prune the set of preferences in such a away that stable preferences are acceptable to human supervisors. Critical in this line of reasoning is the notion of a \emph{metapreference},  or higher-order preference, a notion of a preference over preferences. Formally, an arbitrary ordering on a set of preferences \cite{lutskanov2015}, a narrower class of metapreferences can be represented by utility functions on a set of preference relations, which can be interpreted as measuring the cost or benefit of a preference to the agent as well as the supervisor \cite{munger2019}. Utility functions representing a given metapreferene relation are not unique, i.e.~utility functions capture more than the relative order of preferences. The values of metapreference utilities reflect the degree to which adding additional relations $a \prefers b$ will increase or decrease utility. If every agent has a utility function specifying the cost or benefit of holding every possible preference, maximizing
-% \begin{align}
-%     \max_{\profile = (\pi_1,\pi_2,\dots,\pi_N)} \sum_{i=1}^N v_i(\pi_i), \label{eq:dist-opt}
-% \end{align}
-% is equivalent to finding the preference profile that is the most acceptable to the supervisor.
-
-
-
-% \paragraph*{Switching topology}
-% We assumed that the topology is fixed so that agents interact with the same set of neighbors in each round. We want to relax this assumption so that we can model preference dynamics in systems with more complex patterns of interaction. Suppose the topology of the network is not fixed, and switches according to $\G(t) = \left(\N, \E(t)\right)$. If agents update preferences according to a heterogeneous but fixed-in-time message-passing schema \eqref{eq:message-passing}, then the global dynamics $\profile(t+1) = F_t\left( \profile(t)\right)$ is now a time-variant system. While it is clear that the time-invariant solutions can be identified as intersections and unions of $\{\Fix(F_t)\}_{t = 0}^{\infty}$, these solutions no longer have the structure of a lattice (Theorem \ref{thm:dynamics}), in general. Furthermore, it is not clear what constraints on the connectedness of $\G(t)$ need to be imposed in order to guarantee  non-emptiness of $\SS$ or other desirable properties.
 
 \bibliographystyle{ieeetr}
 \bibliography{IEEEabrv,biblio}
@@ -580,6 +570,10 @@ In the first experiment (Fig.~\ref{fig:experiment_2_4}), every trajectory conver
 \appendix
 
 \subsection*{Proof of Theorem \ref{thm:complete-lattice}}
+\textcolor{red}{\bf [TO DO]: write!}
+
+\subsection*{Proof of Proposition \ref{prop:inflationary}}
+\textcolor{red}{\bf [TO DO]: write!}
 
 
 
