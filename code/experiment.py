@@ -2,7 +2,7 @@ import numpy as np
 from agents import Preference,Agent,SocialNetwork
 from digraphs import generate_random_preorder,generate_random_arborescence
 from random import choices,seed
-from networkx import DiGraph,random_regular_graph,set_node_attributes,neighbors,draw_networkx_nodes,draw_networkx_edges,circular_layout
+from networkx import DiGraph,random_regular_graph,set_node_attributes,neighbors,draw_networkx_nodes,draw_networkx_edges,circular_layout,adjacency_matrix
 import matplotlib.pyplot as plt
 import csv
 from datetime import datetime
@@ -10,18 +10,19 @@ import os
 
 #initial data for problem
 
-experiment_number = 8
+experiment_number = 6
 path = 'experiments/' + 'experiment_' + str(experiment_number) + '/'
 os.mkdir(path)
-experiment_description = 'random initial profiles, fixed regular graph, join update, compute distance_matrix at convergence'
+experiment_description = 'random initial profiles, fixed regular graph, join update, r median, distance matrices at each t recorded'
 date = datetime.now().strftime('%Y-%m-%d')
 n_seed = 29
 n_trials = 10
 n_iterations = 16
-n_agents = 20
-n_neighbors = 8
+n_agents = 10
+n_neighbors = 4
 n_alternatives = 5
-p_preference = 0.1
+n_comparisons = 8
+p_preference = n_comparisons/(n_alternatives*(n_alternatives-1))
 energy_method = 'sum' #either 'max' or 'sum'
 
 #seed
@@ -45,12 +46,13 @@ variables = [
     ('n_agents', n_agents),
     ('n_neighbors', n_neighbors),
     ('n_alternatives', n_alternatives),
+    ('n_comparisons',n_comparisons),
     ('p_preference', p_preference),
     ('r_values',r_values),
     ('update_rules',update_rules),
-    ('graph',graph.edges()),
-    ('energy_method',energy_method)
+    ('graph',graph.edges())
 ]
+
 with open(path+'experiment_' + str(experiment_number) +'_metadata.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(['data', 'variable'])
@@ -62,8 +64,6 @@ header_str = ",".join(map(str, range(n_agents)))
 
 #experiment
 losses = np.zeros([n_trials,n_iterations])
-final_distance_matrices = []
-initial_distance_matrices = []
 for trial in range(n_trials):
     print('trial = '+str(trial))
     print('Preferences updating...')
@@ -74,22 +74,21 @@ for trial in range(n_trials):
         print(digraph.edges)
         agent_dict[node] = Agent(Preference(digraph),r_values[node],update_rules[node])
     network = SocialNetwork(graph,agent_dict) #initialize social network
-    initial_distance_matrices.append(network.distance_matrix(normalized=False))
     #calculate loss
     if energy_method == 'sum':
-        initial_loss = 0.5*np.sum(network.distance_matrix(normalized=False))
+        initial_loss = 0.5*np.sum(network.distance_matrix())
     if energy_method == 'max':
-        initial_loss = np.max(network.distance_matrix(normalized=False))
+        initial_loss = np.max(network.distance_matrix())
     print('Initial loss = '+str(initial_loss))
     for t in range(n_iterations):
         #save distance matrix
         filename =  path + 'experiment_' + str(experiment_number) + '_trial_' + str(trial) + '_t_' + str(t).zfill(2)  + '.csv'
-        np.savetxt(filename,network.distance_matrix(normalized=False),delimiter=",",header=header_str,comments="")
+        np.savetxt(filename,network.distance_matrix(),delimiter=",",header=header_str,comments="")
         #calculate energy
         if energy_method == 'sum':
-            loss = 0.5*np.sum(network.distance_matrix(normalized=False))
+            loss = 0.5*np.sum(network.distance_matrix())
         if energy_method == 'max':
-            loss = np.max(network.distance_matrix(normalized=False))
+            loss = np.max(network.distance_matrix())
         print('loss = ' +str(loss))
         losses[trial,t] = loss
         #update preference profile
@@ -98,5 +97,5 @@ for trial in range(n_trials):
 
 #write loss results to file
 header_str = ",".join(map(str, range(n_iterations)))
-filename =  path + 'experiment_' + str(experiment_number)  + '.csv'
+filename =  path + 'experiment_' + str(experiment_number)  + '_energy.csv'
 np.savetxt(filename,losses, delimiter=",",header=header_str,comments="")

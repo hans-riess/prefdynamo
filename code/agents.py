@@ -117,7 +117,7 @@ class SocialNetwork:
         else:
             return digraph
 
-    def distance_matrix(self,normalized=False):
+    def distance_matrix(self):
         distance_matrix = zeros([self.n_agents, self.n_agents])
         nodes = list(self.graph.nodes())
         for i, node_i in enumerate(nodes):
@@ -127,19 +127,7 @@ class SocialNetwork:
                         distance_matrix[i, j] = self.agent_dict[node_i].preference.tau_distance(self.agent_dict[node_j].preference)
                     except KeyError:
                         print(f"Error: Missing keys {node_i} or {node_j} in agent_dict.")
-        # Normalizing the distance matrix
-        min_val = amin(distance_matrix)
-        max_val = amax(distance_matrix)
-        range_val = max_val - min_val
-        if range_val != 0:  # To avoid division by zero
-            normalized_distance_matrix = (distance_matrix - min_val) / range_val
-        else:
-            normalized_distance_matrix = distance_matrix - min_val
-
-        if normalized == False:
-            return distance_matrix
-        if normalized == True:
-            return normalized_distance_matrix
+        return distance_matrix
         
     def copy(self):
         new_graph = self.graph.copy()

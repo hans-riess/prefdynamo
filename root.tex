@@ -531,30 +531,21 @@ The Kendall $\tau$-distance, defined for preference relations $\pi_1, \pi_2 \in 
         \tau(\pi_1,\pi_2) = \big\vert \{ (a,b) : (a \prefers b) \in \pi_1, (b \prefers a) \in \pi_2  \} \big\vert \label{eq:kendall}
     \end{align}
 is a measure of disagreement between two agents.
-\textcolor{red}{Because the dynamical system \eqref{eq:global-pi} resembles a diffusion process, we boil the term Dirichlet energy to refer to the quantity $\D(\cdot)$ in \eqref{eq:dirichlet}.}
-Then, in a manner similar to the construction of a Lyapunov function of a consensus protocol, we define, given a preference profile $\profile$ and a graph $\G = (\N,\E)$, the quantity \textcolor{red}{[TODO: normalize with respect to total number of edges]}
+\textcolor{red}{}
+Then, we define, given a preference profile $\profile$ and a graph $\G = (\N,\E)$, the quantity \textcolor{red}{\bf [TODO]: normalize with respect to total number of edges?}
 \begin{align}
-    \D(\profile) = \sum_{(i,j) \in \E} \tau(\pi_i,\pi_j), \label{eq:dirichlet}
+    \D(\profile) = \sum_{(i,j) \in \E} \tau(\pi_i,\pi_j). \label{eq:dirichlet}
 \end{align}
-which we call the \emph{Dirichlet energy}. This value represents the total disagreement between agents who are connected in $\G$. The condition $\D\bigl(\profile(t_0+t)\bigr) = \D\bigl(\profile\bigr) =$ for all $t \geq t_0$ is a necessary (but not sufficient) condition for $\profile$ being a stable preference profile. Similarly, periodic orbits in $\profile(t)$ are a necessary condition for periodicity in $\D\bigl( \profile(t)\bigr)$. On the other hand, $\D(\profile) = 0$ is a necessary and sufficient for $\profile$ being a consensus profile, i.e.~$\pi_i = \pi_j$ for all $i,j \in \N$.
+Because the dynamical system \eqref{eq:global-pi} resembles a diffusion process, we boil the term Dirichlet energy to refer to the quantity $\D(\cdot)$ in \eqref{eq:dirichlet}. The Dirichlet energy quantifies the total disagreement between agents who are connected in $\G$. The condition $\D\bigl(\profile(t_0+t)\bigr) = \D\bigl(\profile\bigr)$ for all $t \geq t_0$ is a necessary (but not sufficient) condition for $\profile$ being a stable preference profile. Similarly, periodic orbits in $\profile(t)$ are a necessary condition for periodicity in $\D\bigl( \profile(t)\bigr)$. 
 
 \paragraph*{Experimental setup}
- Given a fixed number of agents $N=20$, we assign message $\psi$, aggregation $\Aggregate(\cdot)$, and update $\varphi$ functions to each agent. In this preliminary simulation, we set $\varphi$ and $\psi$ to be the same rule for every agent, but let $\Aggregate(\cdot)$ vary from agent to agent. In both experiments, we assume agents are truthful, i.e.~$\psi(\pi_i,\pi_j) = \pi_i$. In the first experiment, we let $\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_i \join \pi_{\mathrm{agg}}$ (agents integrate aggregate preference into their old). In the second experiment, we let $\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_{\mathrm{agg}}$ (agents accept aggregate preference). In both experiments, we let $\Aggregate(\cdot) = \Median_{r,k}(\cdot)$, and, modeling agents with different levels of stubbornness, assign different values of $r \in \{1,2,\dots,k\}$ to agents randomly. Next, we chose several initial preference profiles over the alternative set $\A = \{1,2,3,4,5\}$. Each initial profile $\profile(0)$ is given by a choice of preference relation for each agent, which, in turn, is produced by sampling possible edges, selecting each $a \prefers b$ with probability $p=0.1$, and discarding preference relations that violate transitivity. Then, we randomly generate $k$-regular graphs with nodes $\N = \{1,2,\dots,N\}$ for several values of $k$, using an algorithm introduced by \cite{kim2003}. Finally, we compute the trajectories of the preference dynamics equation \eqref{eq:global-pi} for the initial preference profiles we selected which are fixed as we run preference dynamics over each graph. Finally, we compute the Dirichlet energy \eqref{eq:dirichlet} of every preference profile in each trajectory. For the first experiment, the results for $k = 4,8$ are presented in Fig.~\ref{fig:experiment_2_4}. For the second experiment, the results for $k=2$ (a ring graph) are presented in Fig.\ref{fig:experiment_5}.
+ Fixing the number of agents ($N=20$, $N=10$), we assign message $\psi$, aggregation $\Aggregate(\cdot)$, and update $\varphi$ functions to each one. In our experiment, we set $\varphi$ and $\psi$ to be the same rule for every agent, but let $\Aggregate(\cdot)$ vary from agent to agent. We assume agents are truthful, i.e.~$\psi(\pi_i,\pi_j) = \pi_i$, and we assume agents update via the join operation, i.e.~$\varphi(\pi_i,\pi_{\mathrm{agg}}) = \pi_i \join \pi_{\mathrm{agg}}$. We let $\Aggregate(\cdot) = \Median_{r,k}(\cdot)$, and, modeling agents with different levels of stubbornness, assign different values of $r \in \{1,2,\dots,k\}$ to agents randomly. Next, we chose several initial preference profiles over the alternative set $\A = \{1,2,3,4,5\}$. Each initial profile $\profile(0)$ is given by a choice of preference relation for each agent, which, in turn, is produced by sampling possible edges, selecting each $a \prefers b$ with probability $p$, and discarding preference relations that violate transitivity. Then, we randomly generate $k$-regular graphs with nodes $\N = \{1,2,\dots,N\}$ for several values of $k$, using an algorithm introduced by \cite{kim2003}. Finally, we compute the trajectories of the preference dynamics equation \eqref{eq:global-pi} for the initial preference profiles we selected which are fixed as we run preference dynamics over each graph. Finally, we compute the Dirichlet energy \eqref{eq:dirichlet} of every preference profile in each trajectory.
 
  \begin{figure}
- \begin{subfigure}[b]{0.5\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{code/plots/experiment_2_4_plot.png}
-    \caption{$k=4,8$; join update rule.}%
+    \includegraphics[width=0.5\textwidth]{code/figs/fig1.png}
+    \caption{Dirichlet energy $\D(\cdot)$ of trajectories with join update rule and $r$-median aggregation rules (for random $r$). Trajectories of preference dynamics supported on $k$-regular graphs (f$k=4,8$) with various initial profiles.}
     \label{fig:experiment_2_4}
-\end{subfigure}
-\begin{subfigure}[b]{0.5\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{code/plots/experiment_6_plot.png}
-    \caption{$k=2$; posterior update rule.}%
-    \label{fig:experiment_5}
-\end{subfigure}
-\caption{Dirichlet energy $\D(\cdot)$ of trajectories with join update rule (a) or posterior update rule (b) and $r$-median aggregation rules (for random $r$). Trajectories of preference dynamics supported on $k$-regular graphs (for various $k$) with various initial profiles. }
 \end{figure}
 
 
