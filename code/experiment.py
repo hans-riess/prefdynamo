@@ -10,18 +10,18 @@ import os
 
 #initial data for problem
 
-experiment_number = 5
+experiment_number = 7
 path = 'experiments/' + 'experiment_' + str(experiment_number) + '/'
 os.mkdir(path)
-experiment_description = 'random initial profiles, fixed regular graph, join update, r median, distance matrices at each t recorded, normalized by number of edges'
+experiment_description = 'random initial profiles, fixed regular graph, join update, r median, distance matrices at each t recorded'
 date = datetime.now().strftime('%Y-%m-%d')
 n_seed = 29
 n_trials = 10
 n_iterations = 16
-n_agents = 10
+n_agents = 20   
 n_neighbors = 4
 n_alternatives = 5
-n_comparisons = 8
+n_comparisons = 5
 p_preference = n_comparisons/(n_alternatives*(n_alternatives-1))
 energy_method = 'sum' #either 'max' or 'sum'
 
