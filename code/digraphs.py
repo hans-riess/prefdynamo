@@ -1,7 +1,7 @@
 from networkx import DiGraph,Graph
 from networkx import transitive_closure,transitive_reduction,compose,neighbors,is_directed_acyclic_graph,has_path,dfs_preorder_nodes,random_tree
 from random import shuffle,sample,choice
-from numpy.random import rand,seed
+from numpy.random import rand,seed,randn
 from itertools import permutations
 
 def reflexive_closure(digraph):
@@ -44,20 +44,18 @@ def generate_random_preorder(n_nodes, edge_prob,n_seed=None):
             
     return digraph
 
-def generate_random_arborescence(num_nodes):
+def generate_random_arborescence(n_nodes,root=None):
     # Generates a 'random' rooted directed tree.
     G = DiGraph()
-    nodes = list(range(num_nodes))
+    nodes = list(range(n_nodes))
     shuffle(nodes)
-
-    root = nodes.pop()
+    if root == None:
+        root = nodes.pop()
     G.add_node(root)
-    
     for node in nodes:
         possible_parents = list(G.nodes())
         parent = choice(possible_parents)
         G.add_edge(parent, node)
-
     return G
 
 def clean_digraph(digraph):
@@ -68,3 +66,17 @@ def clean_digraph(digraph):
             edges_to_remove.append(edge)
     digraph.remove_edges_from(edges_to_remove)
     return digraph
+
+def random_complete_weighted_digraph(n_nodes,n_seed=None):
+    if seed!=None:
+        seed(n_seed)
+    G = DiGraph()
+    nodes = list(range(n_nodes))
+    for i in range(n_nodes):
+        for j in range(n_nodes):
+            if i!=j:
+                G.add_edge(i,j,weight=randn())
+    return G
+
+
+

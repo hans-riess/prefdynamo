@@ -27,12 +27,12 @@ class NaiveGreedy:
             util+=self.weight_dict[edge]
         return util
 
-    def find_optimum(self, max_steps):
+    def find_optimum(self, n_steps):
         '''
         This method adds edges one-by-one from ref_digraph, applies the transitive closure, and chooses the edge to add that results in
         the highest utility.
         '''
-        for step in range(max_steps):
+        for step in range(n_steps):
             utility = {}
             for edge in self.ref_digraph.edges(): #looping over every edge in the reference digraph
                 if edge not in self.preference.digraph.edges: #we consider only edges that were not already addded to the current preference digraph
@@ -46,13 +46,18 @@ class NaiveGreedy:
                     for edge in new_pref.digraph.edges():
                         util += self.weight_dict[edge]
                     utility[edge] = util
-            edge_to_add = max(utility, key=utility.get)
-            #We choose the edge that maximizes the utility
-            self.preference.digraph.add_edge(*edge_to_add)
-            # Ensure the preference relation is transitively closed and has no self-loops.
-            self.preference.digraph = clean_digraph(transitive_closure(self.preference.digraph))
+            if utility!=dict():
+                edge_to_add = max(utility, key=utility.get)
+                #We choose the edge that maximizes the utility
+                self.preference.digraph.add_edge(*edge_to_add)
+                # Ensure the preference relation is transitively closed and has no self-loops.
+                self.preference.digraph = clean_digraph(transitive_closure(self.preference.digraph))
         return self.preference
 
+class BruteForce:
+    #TO WRITE
+    def __init__(self):
+        return True
 
 
 
