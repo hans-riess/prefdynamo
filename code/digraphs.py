@@ -25,7 +25,7 @@ def intersection(digraph_1,digraph_2):
     return digraph
 
 def generate_random_preorder(n_nodes, edge_prob,n_seed=None):
-    # Step 1: Generate a random DAG
+    # Generates a random DAG
     if n_seed!=None:
         seed(n_seed)
     digraph = DiGraph()
@@ -37,7 +37,7 @@ def generate_random_preorder(n_nodes, edge_prob,n_seed=None):
         if edge_prob > rand():
             digraph.add_edge(i, j)
     
-    # Step 2: Ensure transitivity
+    # Ensures transitivity
     for i, j in permutations(range(n_nodes), 2):
         if has_path(digraph, i, j) and not digraph.has_edge(i, j):
             digraph.add_edge(i, j)
@@ -45,6 +45,7 @@ def generate_random_preorder(n_nodes, edge_prob,n_seed=None):
     return digraph
 
 def generate_random_arborescence(num_nodes):
+    # Generates a 'random' rooted directed tree.
     G = DiGraph()
     nodes = list(range(num_nodes))
     shuffle(nodes)
