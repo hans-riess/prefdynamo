@@ -1,0 +1,18 @@
+*.synctex
+*.aux
+*.log
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.blg
+*.bbl
+*.pdf
+*.key
+__pycache__/
+.ipynb_checkpoints
+
+# experiments/plots
+experiments/
+plots/
+
+
