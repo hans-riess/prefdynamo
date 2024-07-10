@@ -13,6 +13,8 @@
 \usepackage{microtype}
 \usepackage{stmaryrd}
 
+% I AM WORKING ON THIS
+
 %MACROS
 \renewcommand{\preceq}{\preccurlyeq}
 \renewcommand{\succeq}{\succcurlyeq}
@@ -31,7 +33,7 @@
 \newcommand{\D}{\mathcal{D}}
 \newcommand{\U}{\mathcal{U}}
 \newcommand{\Pref}{\mathsf{Pre}}
-\renewcommand{\L}{\mathcal{L}}
+\newcommand{\lattice}{\mathcal{L}}
 \newcommand{\prefers}{\succsim}
 \newcommand{\profile}{\boldsymbol{\pi}}
 \newcommand{\metaprefers}{\sqsupseteq}
@@ -109,12 +111,16 @@ When agents or teams of agents in multi-agent systems are responsible for unilat
 
 % In their traditional use in economics and social science, preferences are commonly associated with taste. Mathematically, however, a preference relation is a relative ordering of \emph{alternatives}, possible choices or options. Preferences are fundamental, e.g., to collective decision---the social choice problem problem \cite{munger2015}---involving collecting and aggregating input from voters, or to non-cooperative games\cite{osborne1994} in which players take actions based on their preferences and the preferences of other agents. In the social choice problem, a fundamental challenge is to design preference-aggregation mechanisms that satisfy certain criteria of fairness. When agents can only communicate or interact locally with other agents, it is not feasible to aggregate preferences in a centralized manner. Worse, even if truthful preferences can be gathered from every agent \cite{gibbard1973,satterthwaite1975}, faithfully representing preferences of a group of agents by a single aggregate preference is well-known to be a paradox \cite{arrow2012}. In a non-cooperative game, players are assumed from the outset to have preferences on the set of action profiles, tuples of actions indexed by players to be taken in the game. 
  
+
+
 % We avoid the standard assumptions from social choice theory \cite{arrow2012} that agents have preferences \emph{a priori}, and that agents they can assign a preference to every possible comparison of alternatives, i.e.,~a \emph{complete preference}, or, even worse, a numerical value to every alternative, i.e.,~a \emph{utility function}, we do assume that preferences are local to the individual agents. In fact, in many scenarios, especially in contested environments, preferences cannot be assumed to be common knowledge \cite{fagin2004reasoning}, i.e., that every agent knows every other agent's preferences, every agent knows that every agent knows every other agent's preference, etc.
 
   
 % \subsection*{Methedology}
 
-In their traditional use in economics and social science, preferences are commonly associated with subjective taste. Here, we take the liberty to extend the notion of preference to arbitrary decision-making contexts, ranging from reinforcement learning (RL)\cite{natarajan2005} to games \cite{roughgarden2010} to language models \cite{ziegler2019}.  Formally, a \emph{preference relation} is a relative ordering on a set of \emph{alternatives} (i.e.~possible choices or options). While preference relations represented by utility functions (which is in itself a strong assumption since even complete preferences can be unrepresentable \cite{Beardon2002}) come with a slew of analytical techniques and computational algorithms, e.g.~a Nash equilibrium, raw preference relations have no such exploitable analytical structure. To analyze raw preference relations, in this paper we resort to algebraic techniques, rather than analytic, posing a new set of challenges. However, our primary motivation for avoiding utility theory is that time-variant utility functions cannot capture preference formation since cardinal or ordinal utilities necessarily compare every alternative. Moreover, the distinction between indifference and indecisiveness, i.e.,~the agent has not made up its mind or faced a choice \cite{eliaz2006}, is captured by incomplete preference relations and not utility functions, although extended preferences are another approach here \cite{harsanyi1955}.
+In their traditional use in economics and social science, preferences are commonly associated with subjective taste. Here, we take the liberty to extend the notion of preference to arbitrary decision-making contexts, ranging from reinforcement learning (RL)\cite{natarajan2005} to games \cite{roughgarden2010} to language models \cite{ziegler2019}.  Formally, a \emph{preference relation} is a relative ordering on a set of \emph{alternatives} (i.e.~possible choices or options). While preference relations represented by utility functions%
+\footnote{A preference relation $\prefers$ is representable by a utility function $u$ if $u(a) \geq u(b)$ if and only if $a \prefers b$.}%
+(which is in itself a strong assumption since even complete preferences can be unrepresentable \cite{Beardon2002}) come with a slew of analytical techniques and computational algorithms, e.g.~a Nash equilibrium, raw preference relations have no such exploitable analytical structure. To analyze raw preference relations, in this paper we resort to algebraic techniques, rather than analytic, posing a new set of challenges. However, our primary motivation for avoiding utility theory is that time-variant utility functions cannot capture preference formation since cardinal or ordinal utilities necessarily compare every alternative. Moreover, the distinction between indifference and indecisiveness, i.e.,~the agent has not made up its mind or faced a choice \cite{eliaz2006}, is captured by incomplete preference relations and not utility functions, although extended preferences are another approach here \cite{harsanyi1955}.
 
 We propose an entirely new methodology that relies on imposing an information order on preference relations (Section \ref{sec:lattices}) to reason about incomplete preferences which, also, is capable of modeling preference change (Section \ref{sec:dynamics}). 
 % Before we discuss parallels of our work to other literature, e.g., in opinion dynamics, and more formally define the preference dynamics problem we consider here, we take a moment to address an ``elephant in the room'': Do preferences, even, change? To be sure, it is widely believed that preferences are stable, and that apparent fluctuations in preferences are, actually, the result of changes in information (e.g.,~prices, in an economic setting), not the preferences themselves \cite{stigler1977}. Dissenting voices, few and far between \cite{hansen1995}, suppose that preferences can, in fact, change due to factors of external influence, e.g.,~by other agents, and internal coherence, i.e.,~altering inconsistent preferences.
@@ -225,8 +231,8 @@ But first, we present some rudimentary material about lattices, starting with ev
 A \emph{preorder} is a set $\P$ with a relation $\precsim$ satisfying the axioms of transitivity and reflexivity. Preferences, we assume, are preorders, and we will use both terms interchangeably throughout this paper. A \emph{partial order} is a preorder, with the order relation usually written $\preceq$, satisfying a third axiom: if $\pi_1 \preceq \pi_2$ and $\pi_2 \preceq \pi_1$, then $\pi_1 = \pi_2$. Note, we do not assume preferences satisfy this third axiom, because agents can be indifferent between two alternatives. In partial orders, however, we conveniently write $\pi_1 \prec \pi_2$ whenever $\pi_1 \preceq \pi_2$, but $\pi_2 \not \preceq \pi_1$.
 
 We consider several types of maps between ordered sets. A map $f: \P \to \Q$ between partial orders is \emph{monotone} if $\pi_1 \preceq_{\P} \pi_2$ implies $f(\pi_1) \preceq_{\Q} f(\pi_2)$. A map $f: \P \to \P$ is \emph{inflationary} if $f(\pi) \succeq \pi$ for all $\pi \in \P$, and \emph{deflationary} if $f(\pi) \preceq \pi$ for all $\pi \in \P$. Note, inflationary or deflationary functions are not necessarily monotone.
-% Let $\Fix(f) = \{ \pi \in \L: f(\pi) = \pi \}$ denote the set of fixed points.
-% $\Pre(f) = \{ \pi \in \L : f(\pi) \preceq \pi\}$ the set of \emph{prefix points}, and $\Post(f) =\{ \pi \in \L : f(\pi) \succeq \pi\}$ the set of \emph{suffix points}. If they exist, let $\lfp(f)$ and $\gfp(f)$ denote the least and greatest fixed points, respectively.
+% Let $\Fix(f) = \{ \pi \in \lattice: f(\pi) = \pi \}$ denote the set of fixed points.
+% $\Pre(f) = \{ \pi \in \lattice : f(\pi) \preceq \pi\}$ the set of \emph{prefix points}, and $\Post(f) =\{ \pi \in \lattice : f(\pi) \succeq \pi\}$ the set of \emph{suffix points}. If they exist, let $\lfp(f)$ and $\gfp(f)$ denote the least and greatest fixed points, respectively.
 Cartesian products of partial orders $\P_1 \times \P_2 \times \cdots \times \P_N$ yield a partial order called the \emph{product order}: $(\pi_1, \pi_2, \dots, \pi_N) \preceq (\pi_1', \pi_2', \dots, \pi_N')$ if and only if $\pi_i \preceq \pi'_i$ for all $i = 1,2,\dots, N$. 
 
 % \begin{lemma} \label{lem:compose-produt}
@@ -240,11 +246,11 @@ Cartesian products of partial orders $\P_1 \times \P_2 \times \cdots \times \P_N
 Lattices are partial orders with a rich algebraic structure given by two merging operations called ``meet'' and ``join.''
  
 \begin{definition}[Lattices] \label{def:lattice}
-    A \emph{lattice} is a partial order $(\L, \preceq)$ such that, for any two elements $\pi_1, \pi_2 \in \L$, the operations
+    A \emph{lattice} is a partial order $(\lattice, \preceq)$ such that, for any two elements $\pi_1, \pi_2 \in \lattice$, the operations
     \begin{align*}
         \begin{aligned}
-        \pi_1 \meet \pi_2 &=& \max\{ \pi \in \L: \pi \preceq \pi_1,~\pi \preceq \pi_2 \}, \\
-        \pi_1 \join \pi_2 &=& \min\{ \pi \in \L: \pi \succeq \pi_1,~\pi \succeq \pi_2 \},       
+        \pi_1 \meet \pi_2 &=& \max\{ \pi \in \lattice: \pi \preceq \pi_1,~\pi \preceq \pi_2 \}, \\
+        \pi_1 \join \pi_2 &=& \min\{ \pi \in \lattice: \pi \succeq \pi_1,~\pi \succeq \pi_2 \},       
         \end{aligned}
     \end{align*}
     called \emph{meet} (greatest lower bound) and \emph{join} (least upper bound), exist. 
@@ -253,7 +259,7 @@ Lattices are partial orders with a rich algebraic structure given by two merging
 We recall a set of properties that characterize lattices as ordered algebraic structures.
 
 \begin{lemma} \label{lem:lattice-axiom} 
-    Suppose $(\L,\preceq)$ is a lattice. Then, $\meet, \join: \L \times \L \to \L$ satisfy the following:
+    Suppose $(\lattice,\preceq)$ is a lattice. Then, $\meet, \join: \lattice \times \lattice \to \lattice$ satisfy the following:
     \begin{itemize}
         \item[(i)] \emph{commutativity}, i.e.,~$\pi_1 \meet \pi_2 = \pi_2 \meet \pi_1$, $\pi_1 \join \pi_2 = \pi_2 \join \pi_1$;
         \item[(ii)] \emph{associativity}, i.e., {\small $\pi_1 \meet (\pi_2 \meet \pi_3) = (\pi_1 \meet \pi_2) \meet \pi_3$}, etc.;
@@ -266,20 +272,20 @@ We recall a set of properties that characterize lattices as ordered algebraic st
     See \cite[\S I.5 Lemma 1, \S I.5 Lemma 3]{birkhoff1940}.
 \end{proof}
 
-% Given variables $\pi_1,\pi_2,\dots,\pi_n$, a \emph{lattice polynomial} $p$ is a term in the language $\pi_1,\pi_2,\dots,\pi_n~\vert~\pi \meet \pi'~\vert~\pi \join \pi'$, i.e.,~an expression formed by finite application of these symbols and parentheses. Suppose $\L$ is  lattice. Then, a lattice polynomial $p$ defines an evaluation map $\mathrm{ev}_p: \L^n \to \L$ by substituting an element of $\L$ into each variable of $p$.
+% Given variables $\pi_1,\pi_2,\dots,\pi_n$, a \emph{lattice polynomial} $p$ is a term in the language $\pi_1,\pi_2,\dots,\pi_n~\vert~\pi \meet \pi'~\vert~\pi \join \pi'$, i.e.,~an expression formed by finite application of these symbols and parentheses. Suppose $\lattice$ is  lattice. Then, a lattice polynomial $p$ defines an evaluation map $\mathrm{ev}_p: \lattice^n \to \lattice$ by substituting an element of $\lattice$ into each variable of $p$.
 
 % \begin{lemma} \label{lem:lattice-polynomial}
-%     Suppose $p$ is a lattice polynomial. Then, $\mathrm{ev}_p(\pi_1,\pi_2,\dots,\pi_n)$ is monotone in the product lattice $\L^n$.
+%     Suppose $p$ is a lattice polynomial. Then, $\mathrm{ev}_p(\pi_1,\pi_2,\dots,\pi_n)$ is monotone in the product lattice $\lattice^n$.
 % \end{lemma}
 % \begin{proof}
 %     See \cite[\S II.5 Lemma 4]{birkhoff1940}.
 % \end{proof}
 
-For lattices that are not finite, there is a distinction between the existence of binary meets and joins versus arbitrary meets and joins. Given $\{x_j\}_{j \in J} \subseteq \L$, a lattice is \emph{complete} if $\bigmeet_{j \in J} \pi_j = \max\{\pi \in \L : \pi \preceq \pi_j~\forall j \in J\}$ and $\bigjoin_{j \in J} \pi_j  = \min\{\pi \in \L : \pi \succeq \pi_j~\forall j \in J\}$ exist.
+For lattices that are not finite, there is a distinction between the existence of binary meets and joins versus arbitrary meets and joins. Given $\{x_j\}_{j \in J} \subseteq \lattice$, a lattice is \emph{complete} if $\bigmeet_{j \in J} \pi_j = \max\{\pi \in \lattice : \pi \preceq \pi_j~\forall j \in J\}$ and $\bigjoin_{j \in J} \pi_j  = \min\{\pi \in \lattice : \pi \succeq \pi_j~\forall j \in J\}$ exist.
 % \begin{align}
 %     \begin{aligned}
-%         \bigmeet_{j \in J} \pi_j = \max\{\pi \in \L : \pi \preceq \pi_j~\forall j \in J\} \\
-%         \bigjoin_{j \in J} \pi_j  = \min\{\pi \in \L : \pi \succeq \pi_j~\forall j \in J\}
+%         \bigmeet_{j \in J} \pi_j = \max\{\pi \in \lattice : \pi \preceq \pi_j~\forall j \in J\} \\
+%         \bigjoin_{j \in J} \pi_j  = \min\{\pi \in \lattice : \pi \succeq \pi_j~\forall j \in J\}
 %     \end{aligned} \label{eq:complete lattice}
 % \end{align}
 % exist.
@@ -486,7 +492,7 @@ We constrain the function class of iterative maps $F$ in \eqref{eq:global-pi} to
 The usual approach to guarantee the existence of equilibrium points in discrete-time systems is to guarantee the existence of fixed points of the iterative map. However, standard approaches to proving the existence of fixed points, e.g.,~Brouwer's fixed-point theorem, require, at a minimum, continuity of the iterative map, which we do not have here. The following fixed point theorem, due to Tarski \cite{tarski1941} and Knaster \cite{knaster1928}, guarantees the existence of fixed points without continuity.
 
 \begin{lemma}[Tarski Fixed Point Theorem \cite{tarski1955}] \label{lem:tfpt}
-    Suppose $\L$ is a complete lattice and $f: \L \to \L$ is monotone. Then, the fixed point set $\Fix(f)$ is a complete lattice.
+    Suppose $\lattice$ is a complete lattice and $f: \lattice \to \lattice$ is monotone. Then, the fixed point set $\Fix(f)$ is a complete lattice.
 \end{lemma}
 \begin{proof}
     See \cite[Theorem 12.2]{roman2008}. 
@@ -621,10 +627,10 @@ We introduced a mathematical framework of lattice dynamical systems on networks 
 \subsection{Lattice Polynomials}
 \vspace{-0.25em}
 
-Given variables $\pi_1,\pi_2,\dots,\pi_n$, a \emph{lattice polynomial} $p$ is a term in the language $\pi_1,\pi_2,\dots,\pi_n~\vert~\pi \meet \pi'~\vert~\pi \join \pi'$, i.e.,~an expression formed by finite application of these symbols and parentheses. Suppose $\L$ is  lattice. Then, a lattice polynomial $p$ defines an evaluation map $\mathrm{ev}_p: \L^n \to \L$ by substituting an element of $\L$ into each variable of $p$.
+Given variables $\pi_1,\pi_2,\dots,\pi_n$, a \emph{lattice polynomial} $p$ is a term in the language $\pi_1,\pi_2,\dots,\pi_n~\vert~\pi \meet \pi'~\vert~\pi \join \pi'$, i.e.,~an expression formed by finite application of these symbols and parentheses. Suppose $\lattice$ is  lattice. Then, a lattice polynomial $p$ defines an evaluation map $\mathrm{ev}_p: \lattice^n \to \lattice$ by substituting an element of $\lattice$ into each variable of $p$.
 
 \begin{lemma} \label{lem:lattice-polynomial}
-    Suppose $p$ is a lattice polynomial. Then, $\mathrm{ev}_p(\pi_1,\pi_2,\dots,\pi_n)$ is monotone in the product lattice $\L^n$.
+    Suppose $p$ is a lattice polynomial. Then, $\mathrm{ev}_p(\pi_1,\pi_2,\dots,\pi_n)$ is monotone in the product lattice $\lattice^n$.
 \end{lemma}
 \begin{proof}
     See \cite[\S II.5 Lemma 4]{birkhoff1940}.

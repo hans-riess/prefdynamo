@@ -10,15 +10,16 @@ import os
 
 #initial data for problem
 
-experiment_number = 7
-path = 'experiments/' + 'experiment_' + str(experiment_number) + '/'
-os.mkdir(path)
+experiment_number = 11
+path = 'code/experiments/' + 'experiment_' + str(experiment_number) + '/'
+if not os.path.exists(path):
+    os.makedirs(path)
 experiment_description = 'random initial profiles, fixed regular graph, join update, r median, distance matrices at each t recorded'
 date = datetime.now().strftime('%Y-%m-%d')
 n_seed = 29
 n_trials = 10
 n_iterations = 16
-n_agents = 20   
+n_agents = 20
 n_neighbors = 4
 n_alternatives = 5
 n_comparisons = 5
@@ -29,8 +30,9 @@ energy_method = 'sum' #either 'max' or 'sum'
 seed(n_seed)
 
 #data for each randomly-generated agent
-r_values = choices(list(range(1,n_neighbors+1)),k=n_agents) #r-values
-update_rules = choices(['join'],k=n_agents) #'prior','posterior','meet' or 'join'
+r_range = list(range(n_neighbors,n_neighbors+1)) #possible r-values
+r_values = choices(r_range,k=n_agents) #assigned r-values
+update_rules = choices(['posterior'],k=n_agents) #'prior','posterior','meet' or 'join'
 
 #generate a random graph defining agent-agent interactions
 graph = random_regular_graph(n_neighbors,n_agents,seed=n_seed)
